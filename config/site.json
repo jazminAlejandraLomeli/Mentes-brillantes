@@ -1,0 +1,39 @@
+{
+    "business": {
+        "name": "Mentes Brillantes",
+        "tagline": "Clases particulares de regularización y recreativas",
+        "teacher": "Lic. Lizbeth Glez Ulloa",
+        "signature": "Liz de Mentes Brillantes"
+    },
+    "whatsapp": {
+        "phone": "3781220818",
+        "default_message": "¡Hola! Me gustaría pedir informes sobre las clases de Mentes Brillantes 🌟"
+    },
+    "social": {
+        "instagram": "https://www.instagram.com/mentesbrillantes.byliz/",
+        "facebook": "",
+        "tiktok": ""
+    },
+    "hero": {
+        "eyebrow": "Regularización · Talleres · Cursos de verano",
+        "title": "Clases que hacen *brillar* a tu peque",
+        "subtitle": "Apoyo escolar personalizado para preescolar, primaria y secundaria, con dinámicas y juegos que hacen que aprender sea divertido."
+    },
+    "highlights": [
+        {
+            "icon": "heart",
+            "title": "Atención personalizada",
+            "text": "Cada niño avanza a su ritmo, con un plan pensado en lo que más necesita."
+        },
+        {
+            "icon": "sparkles",
+            "title": "Aprender jugando",
+            "text": "Dinámicas, manualidades y juegos que hacen que estudiar sea divertido."
+        },
+        {
+            "icon": "message",
+            "title": "Comunicación con papás",
+            "text": "Te cuento sus avances y en qué podemos apoyarlo desde casa."
+        }
+    ]
+}

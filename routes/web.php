@@ -1,0 +1,79 @@
+<?php
+
+use App\Http\Controllers\Admin\AppointmentController;
+use App\Http\Controllers\Admin\AppointmentSeriesController;
+use App\Http\Controllers\Admin\BannerController;
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\EventController;
+use App\Http\Controllers\Admin\GalleryItemController;
+use App\Http\Controllers\Admin\GuardianController;
+use App\Http\Controllers\Admin\ServiceController;
+use App\Http\Controllers\Admin\SiteSettingsController;
+use App\Http\Controllers\Admin\StudentController;
+use App\Http\Controllers\LandingController;
+use Illuminate\Support\Facades\Route;
+
+/*
+|--------------------------------------------------------------------------
+| Página pública
+|--------------------------------------------------------------------------
+*/
+
+Route::get('/', LandingController::class)->name('home');
+
+/*
+|--------------------------------------------------------------------------
+| Panel de Liz (/panel) — requiere iniciar sesión
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware('auth')->prefix('panel')->group(function () {
+    // El nombre "dashboard" lo usan las pantallas de la plantilla (login, menú…)
+    Route::get('/', DashboardController::class)->name('dashboard');
+
+    Route::name('admin.')->group(function () {
+        // --- Contenido de la página ---
+        Route::patch('banners/{banner}/toggle', [BannerController::class, 'toggle'])->name('banners.toggle');
+        Route::post('banners/reorder', [BannerController::class, 'reorder'])->name('banners.reorder');
+        Route::resource('banners', BannerController::class)->except('show');
+
+        Route::patch('services/{service}/toggle', [ServiceController::class, 'toggle'])->name('services.toggle');
+        Route::post('services/reorder', [ServiceController::class, 'reorder'])->name('services.reorder');
+        Route::resource('services', ServiceController::class)->except('show');
+
+        Route::patch('events/{event}/toggle', [EventController::class, 'toggle'])->name('events.toggle');
+        Route::resource('events', EventController::class)->except('show');
+
+        Route::patch('gallery/{galleryItem}/toggle', [GalleryItemController::class, 'toggle'])->name('gallery.toggle');
+        Route::post('gallery/reorder', [GalleryItemController::class, 'reorder'])->name('gallery.reorder');
+        Route::resource('gallery', GalleryItemController::class)
+            ->only(['index', 'store', 'update', 'destroy'])
+            ->parameters(['gallery' => 'galleryItem']);
+
+        // --- Alumnos y familias ---
+        Route::resource('students', StudentController::class);
+        Route::put('guardians/{guardian}', [GuardianController::class, 'update'])->name('guardians.update');
+
+        // --- Agenda ---
+        Route::get('appointments', [AppointmentController::class, 'index'])->name('appointments.index');
+        Route::post('appointments', [AppointmentController::class, 'store'])->name('appointments.store');
+        Route::put('appointments/{appointment}', [AppointmentController::class, 'update'])->name('appointments.update');
+        Route::patch('appointments/{appointment}/status', [AppointmentController::class, 'updateStatus'])->name('appointments.status');
+        Route::post('appointments/{appointment}/reminder-sent', [AppointmentController::class, 'markReminderSent'])->name('appointments.reminder-sent');
+        Route::delete('appointments/{appointment}', [AppointmentController::class, 'destroy'])->name('appointments.destroy');
+
+        Route::post('appointment-series', [AppointmentSeriesController::class, 'store'])->name('series.store');
+        Route::patch('appointment-series/{series}/cancel', [AppointmentSeriesController::class, 'cancelRemaining'])->name('series.cancel');
+        Route::delete('appointment-series/{series}', [AppointmentSeriesController::class, 'destroy'])->name('series.destroy');
+
+        // --- Personalizar ---
+        Route::get('settings/appearance', [SiteSettingsController::class, 'appearance'])->name('settings.appearance');
+        Route::put('settings/appearance', [SiteSettingsController::class, 'updateAppearance'])->name('settings.appearance.update');
+        Route::delete('settings/appearance', [SiteSettingsController::class, 'resetAppearance'])->name('settings.appearance.reset');
+        Route::get('settings/messages', [SiteSettingsController::class, 'messages'])->name('settings.messages');
+        Route::put('settings/messages', [SiteSettingsController::class, 'updateMessages'])->name('settings.messages.update');
+    });
+});
+
+require __DIR__.'/settings.php';
+require __DIR__.'/auth.php';
