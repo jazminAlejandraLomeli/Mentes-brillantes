@@ -183,11 +183,20 @@ cd ~/domains/tudominio.com/demo-app && php artisan demo:reset
 
 ## Actualizar la demo después de hacer cambios
 
-En tu Mac: `npm run build`, commit y push. Luego, en el servidor:
+En tu Mac: `npm run build`, commit y push a `main`. **Ya no hay que entrar al servidor**:
+GitHub Actions corre las pruebas y, si pasan, entra a Hostinger y corre `deploy.sh`
+(`.github/workflows/deploy.yml`). El avance se ve en GitHub → pestaña **Actions**.
+
+Para desplegar a mano (sin push): GitHub → Actions → **deploy** → **Run workflow**,
+o por SSH:
 
 ```bash
 cd ~/domains/tudominio.com/demo-app && bash deploy.sh
 ```
+
+> El deploy automático necesita 3 secretos en GitHub (Settings → Secrets and
+> variables → Actions): `SSH_PRIVATE_KEY`, `SSH_HOST` (`usuario@ip`) y
+> `SSH_KNOWN_HOSTS`. La llave pública correspondiente va en hPanel → Acceso SSH → Claves SSH.
 
 ---
 

@@ -1,0 +1,44 @@
+name: deploy
+
+# Sube los cambios a Hostinger solo si las pruebas ("tests") pasaron en main.
+# Secretos necesarios (repo → Settings → Secrets and variables → Actions):
+#   SSH_PRIVATE_KEY  llave privada que GitHub usa para entrar al servidor
+#   SSH_HOST         usuario@ip de Hostinger (Acceso SSH)
+#   SSH_KNOWN_HOSTS  huella del servidor, para no conectarse a uno falso
+on:
+  workflow_run:
+    workflows: [tests]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch: # botón "Run workflow" para desplegar a mano
+
+concurrency:
+  group: deploy-hostinger
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    env:
+      SSH_PORT: 65002
+      APP_DIR: domains/jazmin-lomeli.com/demo-app
+    steps:
+      - name: Preparar la llave SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_deploy
+          chmod 600 ~/.ssh/id_deploy
+          echo "${{ secrets.SSH_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
+
+      - name: Correr deploy.sh en Hostinger
+        run: |
+          ssh -i ~/.ssh/id_deploy -o IdentitiesOnly=yes -o BatchMode=yes -o StrictHostKeyChecking=yes \
+            -p "$SSH_PORT" "${{ secrets.SSH_HOST }}" "cd ~/$APP_DIR && bash deploy.sh"
+
+      - name: Revisar que el sitio responda
+        run: |
+          sleep 5
+          code=$(curl -s -o /dev/null -w "%{http_code}" https://demo.jazmin-lomeli.com)
+          echo "HTTP $code"
+          test "$code" = "200"
