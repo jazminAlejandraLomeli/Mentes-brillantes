@@ -129,6 +129,14 @@ return [
     |--------------------------------------------------------------------------
     */
 
+    /*
+    | Modo demo (APP_DEMO=true): muestra un aviso, enseña el acceso en el login,
+    | bloquea cambiar usuario/contraseña y permite `php artisan demo:reset`.
+    | NUNCA lo actives en el sitio real de un cliente.
+    */
+
+    'demo' => (bool) env('APP_DEMO', false),
+
     'admin' => [
         'name' => env('ADMIN_NAME', 'Admin'),
         'email' => env('ADMIN_EMAIL'),

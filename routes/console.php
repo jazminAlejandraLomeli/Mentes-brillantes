@@ -1,8 +1,17 @@
 <?php
 
-use Illuminate\Foundation\Inspiring;
-use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Schedule;
 
-Artisan::command('inspire', function () {
-    $this->comment(Inspiring::quote());
-})->purpose('Display an inspiring quote');
+/*
+|--------------------------------------------------------------------------
+| Tareas programadas
+|--------------------------------------------------------------------------
+| En Hostinger, un Cron Job cada minuto corre `php artisan schedule:run`
+| y Laravel decide qué toca ejecutar.
+*/
+
+// Demo: cada noche a las 3:00 am vuelve a los datos de ejemplo
+Schedule::command('demo:reset --force')
+    ->dailyAt('03:00')
+    ->when(fn () => (bool) config('app.demo'))
+    ->withoutOverlapping();
