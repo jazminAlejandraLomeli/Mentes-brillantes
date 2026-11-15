@@ -1,4 +1,5 @@
 import { BrandLogo } from '@/components/brand/brand-logo';
+import { useForceLightMode } from '@/hooks/use-force-light-mode';
 import { Link } from '@inertiajs/react';
 
 interface AuthLayoutProps {
@@ -9,6 +10,8 @@ interface AuthLayoutProps {
 }
 
 export default function AuthSimpleLayout({ children, title, description }: AuthLayoutProps) {
+    useForceLightMode();
+
     return (
         <div className="bg-brand-background flex min-h-svh flex-col items-center justify-center gap-6 p-6 md:p-10">
             <div className="w-full max-w-sm">

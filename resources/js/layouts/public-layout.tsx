@@ -1,6 +1,8 @@
+import { DemoBanner } from '@/components/demo-banner';
 import { SiteFooter } from '@/components/public/site-footer';
 import { type NavLink, SiteHeader } from '@/components/public/site-header';
 import { WhatsAppFab } from '@/components/public/whatsapp-fab';
+import { useForceLightMode } from '@/hooks/use-force-light-mode';
 import { type ReactNode, useEffect } from 'react';
 
 interface PublicLayoutProps {
@@ -14,15 +16,13 @@ interface PublicLayoutProps {
  * y así se ve igual en todos los celulares.
  */
 export default function PublicLayout({ children, links, contactUrl }: PublicLayoutProps) {
+    useForceLightMode();
+
     useEffect(() => {
-        const root = document.documentElement;
-        const hadDark = root.classList.contains('dark');
-        root.classList.remove('dark');
-        root.style.scrollBehavior = 'smooth';
+        document.documentElement.style.scrollBehavior = 'smooth';
 
         return () => {
-            root.classList.toggle('dark', hadDark);
-            root.style.scrollBehavior = '';
+            document.documentElement.style.scrollBehavior = '';
         };
     }, []);
 
@@ -34,6 +34,7 @@ export default function PublicLayout({ children, links, contactUrl }: PublicLayo
             >
                 Saltar al contenido
             </a>
+            <DemoBanner />
             <SiteHeader links={links} contactUrl={contactUrl} />
             <main id="contenido">{children}</main>
             <SiteFooter contactUrl={contactUrl} />

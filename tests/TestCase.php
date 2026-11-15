@@ -15,6 +15,9 @@ abstract class TestCase extends BaseTestCase
         // Las pruebas no dependen del config/site.json real (que cambia por cliente):
         // parten de Mentes Brillantes con una sola maestra.
         // Cada prueba puede simular otro cliente con SiteConfig::fake([...]).
+        // Tampoco dependen de si tu .env tiene APP_DEMO=true
+        config(['app.demo' => false]);
+
         SiteConfig::fake([
             'business' => ['name' => 'Mentes Brillantes', 'full_name' => 'Mentes Brillantes by Liz', 'owner' => 'Liz', 'signature' => 'Liz de Mentes Brillantes'],
             'features' => ['multi_teacher' => false],

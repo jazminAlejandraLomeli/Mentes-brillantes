@@ -46,6 +46,10 @@ class HandleInertiaRequests extends Middleware
             ],
             // Datos de config/site.json (WhatsApp, redes, nombre del negocio)
             'site' => fn () => SiteConfig::all(),
+            // Modo demo: el acceso se muestra en el login para quien la pruebe
+            'demo' => fn () => config('app.demo')
+                ? ['email' => config('app.admin.email'), 'password' => config('app.admin.password')]
+                : null,
             // Logo e icono subidos desde el panel
             'brand' => fn () => BrandAssets::urls(),
             // Tema actual; el panel lo usa para mostrar la vista previa

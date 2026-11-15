@@ -37,9 +37,11 @@ return new class extends Migration
 
     public function down(): void
     {
+        // En MySQL primero se quita la llave foránea; si no, el índice no se puede borrar
         Schema::table('appointments', function (Blueprint $table) {
+            $table->dropForeign(['teacher_id']);
             $table->dropIndex(['teacher_id', 'starts_at']);
-            $table->dropConstrainedForeignId('teacher_id');
+            $table->dropColumn('teacher_id');
         });
 
         Schema::table('appointment_series', function (Blueprint $table) {

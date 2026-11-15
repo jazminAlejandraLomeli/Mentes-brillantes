@@ -23,10 +23,11 @@ interface LoginProps {
 }
 
 export default function Login({ status, canResetPassword }: LoginProps) {
-    const { site } = usePage<SharedData>().props;
+    const { site, demo } = usePage<SharedData>().props;
+    // En la demo el acceso viene ya escrito para que cualquiera pueda probar
     const { data, setData, post, processing, errors, reset } = useForm<LoginForm>({
-        email: '',
-        password: '',
+        email: demo?.email ?? '',
+        password: demo?.password ?? '',
         remember: false,
     });
 
@@ -42,6 +43,18 @@ export default function Login({ status, canResetPassword }: LoginProps) {
             <Head title="Iniciar sesión" />
 
             {status && <div className="text-center text-sm font-medium text-green-600">{status}</div>}
+
+            {demo && (
+                <div className="rounded-2xl border border-amber-200 bg-amber-50 p-3 text-center text-sm text-amber-900">
+                    <p className="font-bold">✨ Acceso de demostración</p>
+                    <p className="mt-1">
+                        {demo.email}
+                        <br />
+                        Contraseña: <span className="font-mono font-semibold">{demo.password}</span>
+                    </p>
+                    <p className="mt-1 text-xs text-amber-800/80">Ya están escritos abajo: solo da clic en «Entrar».</p>
+                </div>
+            )}
 
             <form className="flex flex-col gap-6" onSubmit={submit}>
                 <div className="grid gap-5">

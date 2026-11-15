@@ -178,3 +178,9 @@
         @apply bg-background text-foreground;
     }
 }
+
+/* Cambio de modo oscuro → claro sin colores "a medio camino" (ver use-force-light-mode) */
+.no-transitions,
+.no-transitions * {
+    transition: none !important;
+}

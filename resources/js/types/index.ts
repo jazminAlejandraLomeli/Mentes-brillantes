@@ -49,6 +49,8 @@ export interface SharedData {
     theme: ThemeSettings;
     /** Logo e icono subidos en el panel (null = se usa el arcoíris) */
     brand: { logo_url: string | null; icon_url: string; apple_icon_url: string | null };
+    /** Solo en el sitio de demostración (APP_DEMO=true) */
+    demo: { email: string; password: string } | null;
     flash: {
         success: string | null;
         error: string | null;
