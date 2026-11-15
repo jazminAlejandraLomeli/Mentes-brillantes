@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { type Appointment, type AppointmentStatus } from '@/types/admin';
 import { Link, router } from '@inertiajs/react';
-import { CalendarClock, Check, CheckCheck, CircleX, Clock, Pencil, Repeat, StickyNote, UserRound } from 'lucide-react';
+import { CalendarClock, Check, CheckCheck, CircleX, Clock, GraduationCap, Pencil, Repeat, StickyNote, UserRound } from 'lucide-react';
 
 interface Props {
     appointment: Appointment | null;
@@ -47,6 +47,14 @@ export function AppointmentDetail({ appointment, onClose, onEdit }: Props) {
                             <Row icon={Clock}>
                                 {appointment.time_label} · {appointment.topic}
                             </Row>
+                            {appointment.teacher && (
+                                <Row icon={GraduationCap}>
+                                    <span className="inline-flex items-center gap-1.5">
+                                        <span className="size-2.5 rounded-full" style={{ background: appointment.teacher.color }} />
+                                        Con {appointment.teacher.name}
+                                    </span>
+                                </Row>
+                            )}
                             {appointment.student?.guardian && (
                                 <Row icon={UserRound}>
                                     {appointment.student.guardian.name} · {appointment.student.guardian.whatsapp_phone_formatted}

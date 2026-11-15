@@ -7,7 +7,7 @@ use App\Models\Setting;
 /**
  * Plantillas de mensajes de WhatsApp que Liz puede editar desde el panel.
  *
- * Variables: {tutor} {alumno} {clase} {fecha} {hora} {firma}
+ * Variables: {tutor} {alumno} {clase} {fecha} {hora} {firma} {maestro}
  */
 class WhatsAppTemplates
 {
@@ -27,7 +27,7 @@ class WhatsAppTemplates
     ];
 
     /** @var list<string> */
-    public const VARIABLES = ['tutor', 'alumno', 'clase', 'fecha', 'hora', 'firma'];
+    public const VARIABLES = ['tutor', 'alumno', 'clase', 'fecha', 'hora', 'firma', 'maestro'];
 
     /**
      * @return array<string, string>

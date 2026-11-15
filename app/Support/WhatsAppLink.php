@@ -35,7 +35,7 @@ class WhatsAppLink
      */
     public static function messageForAppointment(Appointment $appointment, string $type): string
     {
-        $appointment->loadMissing('student.guardian', 'service');
+        $appointment->loadMissing('student.guardian', 'service', 'teacher');
 
         return WhatsAppTemplates::render(WhatsAppTemplates::get($type), [
             'tutor' => $appointment->student->guardian->firstName(),
@@ -43,7 +43,8 @@ class WhatsAppLink
             'clase' => $appointment->topic(),
             'fecha' => self::formatDate($appointment->starts_at),
             'hora' => self::formatTime($appointment->starts_at),
-            'firma' => (string) SiteConfig::get('business.signature', 'Liz de Mentes Brillantes'),
+            'firma' => SiteConfig::signature(),
+            'maestro' => $appointment->teacher?->name ?? SiteConfig::owner(),
         ]);
     }
 
@@ -63,7 +64,7 @@ class WhatsAppLink
     public static function contact(?Service $service = null): string
     {
         $message = $service
-            ? "¡Hola! Me interesa «{$service->title}» de Mentes Brillantes. ¿Me podrías dar más informes? 🌟"
+            ? '¡Hola! Me interesa «'.$service->title.'» de '.SiteConfig::name().'. ¿Me podrías dar más informes? 🌟'
             : (string) SiteConfig::get('whatsapp.default_message', '¡Hola! Me gustaría pedir informes 🌟');
 
         return self::to(SiteConfig::whatsappPhone(), $message);

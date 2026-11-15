@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Support\BrandAssets;
 use App\Support\SiteConfig;
 use App\Support\Theme;
 use Illuminate\Http\Request;
@@ -39,12 +40,14 @@ class HandleInertiaRequests extends Middleware
     {
         return [
             ...parent::share($request),
-            'name' => config('app.name'),
+            'name' => SiteConfig::fullName(),
             'auth' => [
                 'user' => $request->user(),
             ],
             // Datos de config/site.json (WhatsApp, redes, nombre del negocio)
             'site' => fn () => SiteConfig::all(),
+            // Logo e icono subidos desde el panel
+            'brand' => fn () => BrandAssets::urls(),
             // Tema actual; el panel lo usa para mostrar la vista previa
             'theme' => fn () => Theme::current(),
             'flash' => [

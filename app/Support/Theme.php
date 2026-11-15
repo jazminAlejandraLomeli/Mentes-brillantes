@@ -35,12 +35,12 @@ class Theme
 
     /**
      * Combinaciones pastel listas para elegir con un clic.
-     * "arcoiris-liz" está medida del logo y los posts de Instagram.
+     * "arcoiris" está medida del logo y los posts de Instagram de Mentes Brillantes.
      *
      * @var array<string, array{label: string, primary: string, secondary: string, accent: string, background: string, text: string}>
      */
     public const PRESETS = [
-        'arcoiris-liz' => ['label' => 'Arcoíris de Liz', 'primary' => '#F784B0', 'secondary' => '#4BBBE5', 'accent' => '#EBA81F', 'background' => '#FFF9EE', 'text' => '#3F3557'],
+        'arcoiris' => ['label' => 'Arcoíris', 'primary' => '#F784B0', 'secondary' => '#4BBBE5', 'accent' => '#EBA81F', 'background' => '#FFF9EE', 'text' => '#3F3557'],
         'algodon' => ['label' => 'Algodón de azúcar', 'primary' => '#F4A3C4', 'secondary' => '#A8C4E5', 'accent' => '#F8D57E', 'background' => '#FFF5FA', 'text' => '#45364F'],
         'lavanda' => ['label' => 'Lavanda', 'primary' => '#C9A0D3', 'secondary' => '#A8C4E5', 'accent' => '#F9C866', 'background' => '#F9F5FF', 'text' => '#3E3556'],
         'menta' => ['label' => 'Menta fresca', 'primary' => '#7FCFB0', 'secondary' => '#A8C4E5', 'accent' => '#F4A3C4', 'background' => '#F3FBF7', 'text' => '#2F4A45'],
@@ -48,14 +48,14 @@ class Theme
         'cielo' => ['label' => 'Cielo', 'primary' => '#7EB8E8', 'secondary' => '#C9A0D3', 'accent' => '#F8D57E', 'background' => '#F4F9FF', 'text' => '#2F3D56'],
     ];
 
-    public const DEFAULT_PRESET = 'arcoiris-liz';
+    public const DEFAULT_PRESET = 'arcoiris';
 
     public const DEFAULT_HEADING_FONT = 'quicksand';
 
     public const DEFAULT_BODY_FONT = 'nunito';
 
     /**
-     * "Arcoíris de Liz" con Quicksand + Nunito.
+     * "Arcoíris" con Quicksand + Nunito.
      *
      * @return array{primary: string, secondary: string, accent: string, background: string, text: string, heading_font: string, body_font: string}
      */

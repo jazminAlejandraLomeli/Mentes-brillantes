@@ -1,4 +1,4 @@
-import { RainbowMark } from '@/components/brand/rainbow-mark';
+import { BrandMark } from '@/components/brand/brand-logo';
 import { WhatsAppButton } from '@/components/public/whatsapp-button';
 import { type SiteConfig } from '@/types';
 import { ArrowDown } from 'lucide-react';
@@ -30,7 +30,7 @@ export function HeroIntro({ hero, contactUrl, hasServices }: { hero: Hero; conta
 
             <div className="relative">
                 <motion.div {...appear(0)}>
-                    <RainbowMark className="mx-auto mb-4 h-10 sm:h-12" />
+                    <BrandMark className="mx-auto mb-4 h-10 w-auto sm:h-12" />
                 </motion.div>
 
                 {hero.eyebrow && (

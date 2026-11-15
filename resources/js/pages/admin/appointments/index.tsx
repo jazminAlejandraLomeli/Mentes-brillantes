@@ -10,7 +10,7 @@ import { NativeSelect } from '@/components/ui/native-select';
 import AppLayout from '@/layouts/app-layout';
 import { addDays, addMonths, daysBetween, formatDay, parseISODate, todayString } from '@/lib/dates';
 import { cn } from '@/lib/utils';
-import { type Appointment, type ServiceOption, type StatusOption, type StudentOption } from '@/types/admin';
+import { type Appointment, type ServiceOption, type StatusOption, type StudentOption, type TeacherOption } from '@/types/admin';
 import { Head, Link, router } from '@inertiajs/react';
 import { CalendarPlus, ChevronLeft, ChevronRight, Plus, Repeat } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
@@ -22,10 +22,12 @@ interface Props {
     view: View;
     date: string;
     range: { from: string; to: string };
-    filters: { status: string | null; student_id: number | null };
+    filters: { status: string | null; student_id: number | null; teacher_id: number | null };
     students: StudentOption[];
     services: ServiceOption[];
     statuses: StatusOption[];
+    /** Vacío si el salón tiene una sola maestra */
+    teachers: TeacherOption[];
 }
 
 const VIEWS: { value: View; label: string }[] = [
@@ -34,7 +36,7 @@ const VIEWS: { value: View; label: string }[] = [
     { value: 'list', label: 'Lista' },
 ];
 
-export default function AppointmentsIndex({ appointments, view, date, range, filters, students, services, statuses }: Props) {
+export default function AppointmentsIndex({ appointments, view, date, range, filters, students, services, statuses, teachers }: Props) {
     const [creating, setCreating] = useState<{ date?: string } | null>(null);
     const [seriesOpen, setSeriesOpen] = useState(false);
     const [selected, setSelected] = useState<Appointment | null>(null);
@@ -51,7 +53,7 @@ export default function AppointmentsIndex({ appointments, view, date, range, fil
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [appointments]);
 
-    const go = (params: Partial<{ view: View; date: string; status: string | null; student_id: number | null }>) =>
+    const go = (params: Partial<{ view: View; date: string; status: string | null; student_id: number | null; teacher_id: number | null }>) =>
         router.get(
             route('admin.appointments.index'),
             {
@@ -59,6 +61,7 @@ export default function AppointmentsIndex({ appointments, view, date, range, fil
                 date: params.date ?? date,
                 status: (params.status !== undefined ? params.status : filters.status) || undefined,
                 student_id: (params.student_id !== undefined ? params.student_id : filters.student_id) || undefined,
+                teacher_id: (params.teacher_id !== undefined ? params.teacher_id : filters.teacher_id) || undefined,
             },
             { preserveState: true, preserveScroll: true, replace: true },
         );
@@ -102,7 +105,7 @@ export default function AppointmentsIndex({ appointments, view, date, range, fil
                 />
 
                 {/* Barra de navegación */}
-                <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+                <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
                     <div className="flex items-center gap-2">
                         <Button variant="outline" size="icon" onClick={() => step(-1)} aria-label="Anterior">
                             <ChevronLeft />
@@ -113,10 +116,25 @@ export default function AppointmentsIndex({ appointments, view, date, range, fil
                         <Button variant="outline" size="icon" onClick={() => step(1)} aria-label="Siguiente">
                             <ChevronRight />
                         </Button>
-                        <h2 className="font-heading ml-2 text-lg font-bold first-letter:uppercase">{title}</h2>
+                        <h2 className="font-heading ml-2 text-lg font-bold whitespace-nowrap first-letter:uppercase">{title}</h2>
                     </div>
                     <div className="flex flex-wrap items-center gap-2">
                         <StudentSearch students={students} selectedId={filters.student_id} onSelect={(id) => go({ student_id: id })} />
+                        {teachers.length > 0 && (
+                            <NativeSelect
+                                aria-label="Filtrar por maestro"
+                                value={filters.teacher_id ?? ''}
+                                onChange={(e) => go({ teacher_id: e.target.value ? Number(e.target.value) : null })}
+                                className="h-9 w-44"
+                            >
+                                <option value="">Todos los maestros</option>
+                                {teachers.map((t) => (
+                                    <option key={t.id} value={t.id}>
+                                        {t.name}
+                                    </option>
+                                ))}
+                            </NativeSelect>
+                        )}
                         <NativeSelect
                             aria-label="Filtrar por estado"
                             value={filters.status ?? ''}
@@ -225,6 +243,8 @@ export default function AppointmentsIndex({ appointments, view, date, range, fil
                 onOpenChange={(o) => !o && setCreating(null)}
                 defaultDate={creating?.date}
                 defaultStudentId={filters.student_id ?? undefined}
+                defaultTeacherId={filters.teacher_id ?? undefined}
+                teachers={teachers}
                 students={students}
                 services={services}
             />
@@ -232,6 +252,7 @@ export default function AppointmentsIndex({ appointments, view, date, range, fil
                 open={editing !== null}
                 onOpenChange={(o) => !o && setEditing(null)}
                 appointment={editing}
+                teachers={teachers}
                 students={students}
                 services={services}
                 statuses={statuses}
@@ -240,6 +261,8 @@ export default function AppointmentsIndex({ appointments, view, date, range, fil
                 open={seriesOpen}
                 onOpenChange={setSeriesOpen}
                 defaultStudentId={filters.student_id ?? undefined}
+                defaultTeacherId={filters.teacher_id ?? undefined}
+                teachers={teachers}
                 students={students}
                 services={services}
             />
@@ -307,6 +330,12 @@ function WeekView({
                                     <span className="block font-bold">{a.time_label.split(' – ')[0]}</span>
                                     <span className="block truncate font-semibold">{a.student?.name.split(' ').slice(0, 2).join(' ')}</span>
                                     <span className="text-muted-foreground block truncate">{a.topic}</span>
+                                    {a.teacher && (
+                                        <span className="mt-0.5 flex items-center gap-1 truncate font-semibold">
+                                            <span className="size-2 shrink-0 rounded-full" style={{ background: a.teacher.color }} />
+                                            {a.teacher.name}
+                                        </span>
+                                    )}
                                 </button>
                             ))}
                             {list.length === 0 && <p className="text-muted-foreground px-1 text-xs md:hidden">Sin clases</p>}
@@ -378,6 +407,9 @@ function MonthView({
                                             'hover:bg-accent flex items-center gap-1 truncate rounded px-1 text-left text-[0.7rem]',
                                             a.status === 'cancelled' && 'line-through opacity-50',
                                         )}
+                                        // En salones con varios maestros, cada clase lleva el color de su maestro
+                                        style={a.teacher ? { background: `${a.teacher.color}26` } : undefined}
+                                        title={a.teacher ? `${a.teacher.name} · ${a.status_label}` : a.status_label}
                                     >
                                         <span className={cn('size-1.5 shrink-0 rounded-full', statusDot[a.status])} />
                                         <span className="font-semibold">{a.time}</span>

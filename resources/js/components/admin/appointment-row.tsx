@@ -47,6 +47,12 @@ export function AppointmentRow({ appointment, showDate = false, actions, onClick
                         {appointment.topic}
                         {student?.guardian && <> · {student.guardian.name}</>}
                     </p>
+                    {appointment.teacher && (
+                        <p className="mt-0.5 flex items-center gap-1.5 text-xs font-semibold">
+                            <span className="size-2 rounded-full" style={{ background: appointment.teacher.color }} />
+                            {appointment.teacher.name}
+                        </p>
+                    )}
                 </div>
             </button>
             <div className="flex flex-wrap items-center gap-2 sm:justify-end">

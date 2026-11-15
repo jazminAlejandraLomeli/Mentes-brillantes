@@ -3,7 +3,6 @@
 namespace Tests\Feature;
 
 use App\Enums\Modality;
-use App\Enums\ServiceCategory;
 use App\Models\Banner;
 use App\Models\Event;
 use App\Models\Service;
@@ -37,7 +36,7 @@ class LandingTest extends TestCase
     public function test_oculta_el_precio_si_liz_no_quiere_mostrarlo(): void
     {
         $base = [
-            'category' => ServiceCategory::Regularization, 'short_description' => 'x',
+            'category' => 'regularization', 'short_description' => 'x',
             'modality' => Modality::InPerson, 'price' => 250, 'price_note' => 'por sesión',
         ];
         Service::create([...$base, 'title' => 'Con precio', 'show_price' => true]);

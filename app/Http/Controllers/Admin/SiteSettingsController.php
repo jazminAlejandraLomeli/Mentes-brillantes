@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\LogoRequest;
 use App\Http\Requests\Admin\ThemeRequest;
 use App\Http\Requests\Admin\WhatsAppTemplatesRequest;
 use App\Services\SiteSettingsService;
@@ -33,6 +34,20 @@ class SiteSettingsController extends Controller
         $this->settings->updateTheme($request->validated());
 
         return back()->with('success', '¡Listo! La página ya tiene los nuevos colores 🎨');
+    }
+
+    public function updateLogo(LogoRequest $request): RedirectResponse
+    {
+        $this->settings->updateLogo($request->file('logo'));
+
+        return back()->with('success', '¡Logo guardado! Ya aparece en tu página y en la pestaña del navegador ✨');
+    }
+
+    public function removeLogo(): RedirectResponse
+    {
+        $this->settings->removeLogo();
+
+        return back()->with('success', 'Se quitó el logo. La página vuelve a mostrar el arcoíris.');
     }
 
     public function resetAppearance(): RedirectResponse

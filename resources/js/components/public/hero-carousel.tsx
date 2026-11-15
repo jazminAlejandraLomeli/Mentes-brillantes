@@ -77,13 +77,13 @@ export function HeroCarousel({ banners, contactUrl }: HeroCarouselProps) {
                                 fetchPriority={index === 0 ? 'high' : 'auto'}
                             />
                         )}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/25 to-transparent sm:bg-gradient-to-r sm:from-black/60 sm:via-black/25 " />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/25 to-transparent sm:bg-gradient-to-r sm:from-black/60 sm:via-black/25" />
 
                         <div
                             role="group"
                             aria-roledescription="diapositiva"
                             aria-label={`${index + 1} de ${count}`}
-                            className="absolute  inset-x-0 bottom-0 p-6 pb-14 sm:top-0 sm:flex sm:max-w-xl sm:flex-col sm:justify-center sm:p-12"
+                            className="absolute inset-x-0 bottom-0 p-6 pb-14 sm:top-0 sm:flex sm:max-w-xl sm:flex-col sm:justify-center sm:p-12"
                         >
                             <motion.h2
                                 initial={reduceMotion ? false : { opacity: 0, y: 20 }}

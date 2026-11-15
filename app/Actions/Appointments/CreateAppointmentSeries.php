@@ -24,6 +24,7 @@ class CreateAppointmentSeries
      * @param  array{
      *     student_id: int,
      *     service_id?: int|null,
+     *     teacher_id?: int|null,
      *     subject?: string|null,
      *     weekdays: list<int>,
      *     start_time: string,
@@ -42,6 +43,7 @@ class CreateAppointmentSeries
             $rows = $this->occurrences($series)->map(fn (Carbon $startsAt) => [
                 'student_id' => $series->student_id,
                 'service_id' => $series->service_id,
+                'teacher_id' => $series->teacher_id,
                 'subject' => $series->subject,
                 'starts_at' => $startsAt,
                 'duration_minutes' => $series->duration_minutes,

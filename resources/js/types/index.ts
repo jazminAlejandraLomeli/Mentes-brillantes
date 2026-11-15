@@ -22,9 +22,11 @@ export interface NavItem {
 }
 
 export interface SiteConfig {
-    business: { name: string; tagline: string; teacher: string; signature: string };
+    business: { name: string; full_name: string; owner: string; tagline: string; teacher: string; signature: string };
     whatsapp: { phone: string; default_message: string };
     social: { instagram: string; facebook: string; tiktok: string };
+    features?: { multi_teacher?: boolean };
+    categories?: { key: string; label: string; color: 'primary' | 'secondary' | 'accent' }[];
     /** Frase de bienvenida arriba del carrusel. Las palabras entre *asteriscos* se resaltan. */
     hero?: { eyebrow?: string; title: string; subtitle?: string };
     highlights?: { icon: 'heart' | 'sparkles' | 'message' | 'book' | 'star' | 'users'; title: string; text: string }[];
@@ -45,6 +47,8 @@ export interface SharedData {
     auth: Auth;
     site: SiteConfig;
     theme: ThemeSettings;
+    /** Logo e icono subidos en el panel (null = se usa el arcoíris) */
+    brand: { logo_url: string | null; icon_url: string; apple_icon_url: string | null };
     flash: {
         success: string | null;
         error: string | null;

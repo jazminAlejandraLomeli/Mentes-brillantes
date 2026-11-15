@@ -5,7 +5,19 @@ import { useState } from 'react';
 /**
  * Switch "visible en la página" que guarda al instante.
  */
-export function VisibilityToggle({ url, visible, label }: { url: string; visible: boolean; label: string }) {
+export function VisibilityToggle({
+    url,
+    visible,
+    label,
+    onText = 'Visible',
+    offText = 'Oculto',
+}: {
+    url: string;
+    visible: boolean;
+    label: string;
+    onText?: string;
+    offText?: string;
+}) {
     const [busy, setBusy] = useState(false);
 
     return (
@@ -19,7 +31,7 @@ export function VisibilityToggle({ url, visible, label }: { url: string; visible
                     router.patch(url, {}, { preserveScroll: true, onFinish: () => setBusy(false) });
                 }}
             />
-            <span className={visible ? 'font-semibold' : 'text-muted-foreground'}>{visible ? 'Visible' : 'Oculto'}</span>
+            <span className={visible ? 'font-semibold' : 'text-muted-foreground'}>{visible ? onText : offText}</span>
         </label>
     );
 }

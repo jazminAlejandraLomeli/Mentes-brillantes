@@ -2,9 +2,9 @@ import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
-import { type NavItem } from '@/types';
-import { Link } from '@inertiajs/react';
-import { Calendar, CalendarDays, ExternalLink, House, Image, Images, MessageSquareText, Palette, Shapes, Users } from 'lucide-react';
+import { type NavItem, type SharedData } from '@/types';
+import { Link, usePage } from '@inertiajs/react';
+import { Calendar, CalendarDays, ExternalLink, GraduationCap, House, Image, Images, MessageSquareText, Palette, Shapes, Users } from 'lucide-react';
 import AppLogo from './app-logo';
 
 const agendaItems: NavItem[] = [
@@ -12,6 +12,9 @@ const agendaItems: NavItem[] = [
     { title: 'Agenda', url: route('admin.appointments.index'), icon: CalendarDays },
     { title: 'Alumnos', url: route('admin.students.index'), icon: Users },
 ];
+
+// En salones con varios maestros va junto a la agenda; si no, junto a la página web
+const teachersItem: NavItem = { title: 'Maestros', url: route('admin.teachers.index'), icon: GraduationCap };
 
 const contentItems: NavItem[] = [
     { title: 'Banners', url: route('admin.banners.index'), icon: Image },
@@ -21,13 +24,18 @@ const contentItems: NavItem[] = [
 ];
 
 const settingsItems: NavItem[] = [
-    { title: 'Colores y letras', url: route('admin.settings.appearance'), icon: Palette },
+    { title: 'Colores, letras y logo', url: route('admin.settings.appearance'), icon: Palette },
     { title: 'Mensajes de WhatsApp', url: route('admin.settings.messages'), icon: MessageSquareText },
 ];
 
 const footerNavItems: NavItem[] = [{ title: 'Ver mi página', url: route('home'), icon: ExternalLink }];
 
 export function AppSidebar() {
+    const { site } = usePage<SharedData>().props;
+    const multiTeacher = Boolean(site.features?.multi_teacher);
+    const classItems = multiTeacher ? [...agendaItems, teachersItem] : agendaItems;
+    const pageItems = multiTeacher ? contentItems : [teachersItem, ...contentItems];
+
     return (
         <Sidebar collapsible="icon" variant="inset">
             <SidebarHeader>
@@ -43,8 +51,8 @@ export function AppSidebar() {
             </SidebarHeader>
 
             <SidebarContent>
-                <NavMain items={agendaItems} label="Clases" />
-                <NavMain items={contentItems} label="Mi página web" />
+                <NavMain items={classItems} label="Clases" />
+                <NavMain items={pageItems} label="Mi página web" />
                 <NavMain items={settingsItems} label="Personalizar" />
             </SidebarContent>
 

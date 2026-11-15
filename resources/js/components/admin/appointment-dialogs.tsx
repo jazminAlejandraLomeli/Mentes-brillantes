@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { NativeSelect } from '@/components/ui/native-select';
 import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
-import { type Appointment, type ServiceOption, type StatusOption, type StudentOption } from '@/types/admin';
+import { type Appointment, type ServiceOption, type StatusOption, type StudentOption, type TeacherOption } from '@/types/admin';
 import { useForm } from '@inertiajs/react';
 import { CalendarPlus, LoaderCircle, Repeat } from 'lucide-react';
 import { type FormEventHandler, useEffect, useMemo, useState } from 'react';
@@ -29,6 +29,9 @@ export function todayISO(): string {
 interface Options {
     students: StudentOption[];
     services: ServiceOption[];
+    /** Solo en salones con varios maestros; vacío = no se pregunta */
+    teachers?: TeacherOption[];
+    defaultTeacherId?: number;
     statuses?: StatusOption[];
 }
 
@@ -43,6 +46,7 @@ interface AppointmentDialogProps extends Options {
 
 type AppointmentForm = {
     student_id: string;
+    teacher_id: string;
     service_id: string;
     subject: string;
     date: string;
@@ -62,10 +66,13 @@ export function AppointmentDialog({
     students,
     services,
     statuses,
+    teachers = [],
+    defaultTeacherId,
 }: AppointmentDialogProps) {
     const editing = Boolean(appointment);
     const initial = (): AppointmentForm => ({
         student_id: String(appointment?.student_id ?? defaultStudentId ?? ''),
+        teacher_id: String(appointment?.teacher_id ?? defaultTeacherId ?? ''),
         service_id: String(appointment?.service_id ?? ''),
         subject: appointment?.subject ?? '',
         date: appointment?.date ?? defaultDate ?? todayISO(),
@@ -116,7 +123,14 @@ export function AppointmentDialog({
                 </DialogHeader>
 
                 <form onSubmit={submit} className="grid gap-4">
-                    <StudentAndTopicFields data={data} setData={setData} errors={errors} students={students} services={services} />
+                    <StudentAndTopicFields
+                        data={data}
+                        setData={setData}
+                        errors={errors}
+                        students={students}
+                        services={services}
+                        teachers={teachers}
+                    />
                     <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
                         <FormField label="Fecha" htmlFor="appt-date" error={errors.date} className="col-span-2 sm:col-span-1">
                             <Input id="appt-date" type="date" value={data.date} onChange={(e) => setData('date', e.target.value)} required />
@@ -178,6 +192,7 @@ interface SeriesDialogProps extends Options {
 
 type SeriesForm = {
     student_id: string;
+    teacher_id: string;
     service_id: string;
     subject: string;
     weekdays: number[];
@@ -191,9 +206,10 @@ type SeriesForm = {
 };
 
 /** Clases que se repiten cada semana (ej. lunes y miércoles, 10 clases). */
-export function SeriesDialog({ open, onOpenChange, defaultStudentId, students, services }: SeriesDialogProps) {
+export function SeriesDialog({ open, onOpenChange, defaultStudentId, students, services, teachers = [], defaultTeacherId }: SeriesDialogProps) {
     const { data, setData, post, processing, errors, reset, clearErrors, transform } = useForm<SeriesForm>({
         student_id: String(defaultStudentId ?? ''),
+        teacher_id: String(defaultTeacherId ?? ''),
         service_id: '',
         subject: '',
         weekdays: [],
@@ -211,9 +227,10 @@ export function SeriesDialog({ open, onOpenChange, defaultStudentId, students, s
         if (open) {
             clearErrors();
             if (defaultStudentId) setData('student_id', String(defaultStudentId));
+            if (defaultTeacherId) setData('teacher_id', String(defaultTeacherId));
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [open, defaultStudentId]);
+    }, [open, defaultStudentId, defaultTeacherId]);
 
     // Vista previa de las primeras fechas (se calcula igual que en el servidor)
     const dates = useMemo(() => {
@@ -266,7 +283,14 @@ export function SeriesDialog({ open, onOpenChange, defaultStudentId, students, s
                 </DialogHeader>
 
                 <form onSubmit={submit} className="grid gap-4">
-                    <StudentAndTopicFields data={data} setData={setData} errors={errors} students={students} services={services} />
+                    <StudentAndTopicFields
+                        data={data}
+                        setData={setData}
+                        errors={errors}
+                        students={students}
+                        services={services}
+                        teachers={teachers}
+                    />
 
                     <FormField label="¿Qué días de la semana?" error={errors.weekdays}>
                         <div className="flex flex-wrap gap-1.5" role="group" aria-label="Días de la semana">
@@ -398,7 +422,7 @@ export function SeriesDialog({ open, onOpenChange, defaultStudentId, students, s
 
 // --- Campos compartidos ---
 
-type TopicData = { student_id: string; service_id: string; subject: string };
+type TopicData = { student_id: string; teacher_id: string; service_id: string; subject: string };
 
 function StudentAndTopicFields<T extends TopicData>({
     data,
@@ -406,6 +430,7 @@ function StudentAndTopicFields<T extends TopicData>({
     errors,
     students,
     services,
+    teachers,
 }: {
     data: T;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -413,9 +438,35 @@ function StudentAndTopicFields<T extends TopicData>({
     errors: Partial<Record<string, string>>;
     students: StudentOption[];
     services: ServiceOption[];
+    teachers: TeacherOption[];
 }) {
+    const teacher = teachers.find((t) => String(t.id) === data.teacher_id);
+
     return (
         <>
+            {teachers.length > 0 && (
+                <FormField label="Maestro" htmlFor="appt-teacher" error={errors.teacher_id}>
+                    <div className="flex items-center gap-2">
+                        <span
+                            className="size-4 shrink-0 rounded-full border"
+                            style={{ background: teacher?.color ?? 'transparent' }}
+                            aria-hidden="true"
+                        />
+                        <div className="flex-1">
+                            <NativeSelect id="appt-teacher" value={data.teacher_id} onChange={(e) => setData('teacher_id', e.target.value)} required>
+                                <option value="" disabled>
+                                    Elige al maestro…
+                                </option>
+                                {teachers.map((t) => (
+                                    <option key={t.id} value={t.id}>
+                                        {t.name}
+                                    </option>
+                                ))}
+                            </NativeSelect>
+                        </div>
+                    </div>
+                </FormField>
+            )}
             <FormField label="Alumno" htmlFor="appt-student" error={errors.student_id}>
                 <NativeSelect id="appt-student" value={data.student_id} onChange={(e) => setData('student_id', e.target.value)} required>
                     <option value="" disabled>

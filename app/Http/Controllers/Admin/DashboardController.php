@@ -20,7 +20,7 @@ class DashboardController extends Controller
 {
     public function __invoke(): Response
     {
-        $withRelations = fn ($q) => $q->with(['student.guardian', 'service'])->orderBy('starts_at');
+        $withRelations = fn ($q) => $q->with(['student.guardian', 'service', 'teacher'])->orderBy('starts_at');
 
         $today = $withRelations(Appointment::query()->onDate(today())->where('status', '!=', AppointmentStatus::Cancelled))->get();
         $tomorrow = $withRelations(Appointment::query()->onDate(today()->addDay())->where('status', '!=', AppointmentStatus::Cancelled))->get();

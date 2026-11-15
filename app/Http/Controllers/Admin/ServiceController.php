@@ -3,13 +3,13 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Enums\Modality;
-use App\Enums\ServiceCategory;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\ReorderRequest;
 use App\Http\Requests\Admin\ServiceRequest;
 use App\Http\Resources\ServiceResource;
 use App\Models\Service;
 use App\Services\Content\ServiceCatalogService;
+use App\Support\ServiceCategories;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -21,7 +21,7 @@ class ServiceController extends Controller
 
     public function index(Request $request): Response
     {
-        $category = ServiceCategory::tryFrom((string) $request->query('category'));
+        $category = in_array($request->query('category'), ServiceCategories::keys(), true) ? (string) $request->query('category') : null;
 
         return Inertia::render('admin/services/index', [
             'services' => ServiceResource::collection(
@@ -30,8 +30,8 @@ class ServiceController extends Controller
                     ->orderBy('sort_order')->orderBy('title')
                     ->get(),
             ),
-            'filters' => ['category' => $category?->value],
-            'categories' => ServiceCategory::options(),
+            'filters' => ['category' => $category],
+            'categories' => ServiceCategories::options(),
         ]);
     }
 
@@ -92,7 +92,7 @@ class ServiceController extends Controller
     private function formOptions(): array
     {
         return [
-            'categories' => ServiceCategory::options(),
+            'categories' => ServiceCategories::options(),
             'modalities' => Modality::options(),
         ];
     }

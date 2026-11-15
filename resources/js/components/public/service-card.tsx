@@ -2,15 +2,15 @@ import { RainbowMark } from '@/components/brand/rainbow-mark';
 import { WhatsAppButton } from '@/components/public/whatsapp-button';
 import { formatPrice } from '@/lib/format';
 import { cn } from '@/lib/utils';
-import { type Service, type ServiceCategory } from '@/types/models';
+import { type BrandColor, type Service } from '@/types/models';
 import { ChevronDown, MapPin, Smile, Star } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useState } from 'react';
 
-const categoryTone: Record<ServiceCategory, string> = {
-    regularization: 'bg-brand-secondary-soft text-brand-secondary-strong',
-    workshop: 'bg-brand-accent-soft text-brand-accent-strong',
-    summer_course: 'bg-brand-primary-soft text-brand-primary-strong',
+const categoryTone: Record<BrandColor, string> = {
+    secondary: 'bg-brand-secondary-soft text-brand-secondary-strong',
+    accent: 'bg-brand-accent-soft text-brand-accent-strong',
+    primary: 'bg-brand-primary-soft text-brand-primary-strong',
 };
 
 export function ServiceCard({ service }: { service: Service }) {
@@ -39,7 +39,12 @@ export function ServiceCard({ service }: { service: Service }) {
                         <RainbowMark className="h-16 opacity-70" />
                     </div>
                 )}
-                <span className={cn('absolute top-3 left-3 rounded-full px-3 py-1 text-xs font-bold shadow-sm', categoryTone[service.category])}>
+                <span
+                    className={cn(
+                        'absolute top-3 left-3 rounded-full px-3 py-1 text-xs font-bold shadow-sm',
+                        categoryTone[service.category_color] ?? categoryTone.secondary,
+                    )}
+                >
                     {service.category_label}
                 </span>
                 {service.is_featured && (

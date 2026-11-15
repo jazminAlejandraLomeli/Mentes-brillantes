@@ -13,7 +13,9 @@ use App\Http\Resources\StudentResource;
 use App\Models\Guardian;
 use App\Models\Service;
 use App\Models\Student;
+use App\Models\Teacher;
 use App\Services\StudentService;
+use App\Support\SiteConfig;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -74,11 +76,11 @@ class StudentController extends Controller
         return Inertia::render('admin/students/show', [
             'student' => new StudentResource($student),
             'upcoming' => AppointmentResource::collection(
-                $student->appointments()->with(['service', 'student.guardian'])
+                $student->appointments()->with(['service', 'teacher', 'student.guardian'])
                     ->where('starts_at', '>=', now()->startOfDay())->orderBy('starts_at')->limit(30)->get(),
             ),
             'history' => AppointmentResource::collection(
-                $student->appointments()->with('service')
+                $student->appointments()->with(['service', 'teacher'])
                     ->where('starts_at', '<', now()->startOfDay())->orderByDesc('starts_at')->limit(30)->get(),
             ),
             'series' => AppointmentSeriesResource::collection(
@@ -89,6 +91,10 @@ class StudentController extends Controller
             'services' => Service::query()->active()->orderBy('title')->get(['id', 'title'])
                 ->map(fn (Service $s) => ['id' => $s->id, 'title' => $s->title]),
             'statuses' => AppointmentStatus::options(),
+            'teachers' => SiteConfig::multiTeacher()
+                ? Teacher::query()->active()->ordered()->get(['id', 'name', 'color'])
+                    ->map(fn (Teacher $t) => ['id' => $t->id, 'name' => $t->name, 'color' => $t->color])
+                : [],
         ]);
     }
 

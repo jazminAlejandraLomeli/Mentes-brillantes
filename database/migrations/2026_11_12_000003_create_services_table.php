@@ -13,7 +13,7 @@ return new class extends Migration
             $table->id();
             $table->string('title', 120);
             $table->string('slug', 140)->unique();
-            $table->string('category', 30);                 // App\Enums\ServiceCategory
+            $table->string('category', 30);                 // key de config/site.json → categories
             $table->string('short_description', 255);
             $table->text('description')->nullable();
             $table->unsignedTinyInteger('age_min')->nullable();

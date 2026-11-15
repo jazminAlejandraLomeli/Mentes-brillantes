@@ -86,7 +86,7 @@ export default function EventFormPage({ event }: { event: SiteEvent | null }) {
                                 id="location"
                                 value={data.location}
                                 onChange={(e) => setData('location', e.target.value)}
-                                placeholder="Mentes Brillantes"
+                                placeholder="Ej. Salón principal"
                                 maxLength={150}
                             />
                         </FormField>

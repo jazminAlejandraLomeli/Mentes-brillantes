@@ -1,6 +1,8 @@
 {
     "business": {
         "name": "Mentes Brillantes",
+        "full_name": "Mentes Brillantes by Liz",
+        "owner": "Mentes",
         "tagline": "Clases particulares de regularización y recreativas",
         "teacher": "Lic. Lizbeth Glez Ulloa",
         "signature": "Liz de Mentes Brillantes"
@@ -14,6 +16,14 @@
         "facebook": "",
         "tiktok": ""
     },
+    "features": {
+        "multi_teacher": true
+    },
+    "categories": [
+        { "key": "regularization", "label": "Regularización", "color": "secondary" },
+        { "key": "workshop", "label": "Taller", "color": "accent" },
+        { "key": "summer_course", "label": "Curso de verano", "color": "primary" }
+    ],
     "hero": {
         "eyebrow": "Regularización · Talleres · Cursos de verano",
         "title": "Clases que hacen *brillar* a tu peque",

@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Admin;
 
 use App\Enums\AppointmentStatus;
+use App\Support\SiteConfig;
 use Illuminate\Support\Carbon;
 use Illuminate\Validation\Rule;
 
@@ -19,6 +20,7 @@ class AppointmentRequest extends AdminRequest
         return [
             'student_id' => ['required', 'integer', 'exists:students,id'],
             'service_id' => ['nullable', 'integer', 'exists:services,id'],
+            'teacher_id' => [Rule::requiredIf(SiteConfig::multiTeacher()), 'nullable', 'integer', 'exists:teachers,id'],
             'subject' => ['nullable', 'string', 'max:120'],
             'date' => ['required', 'date_format:Y-m-d'],
             'time' => ['required', 'date_format:H:i'],
@@ -36,6 +38,7 @@ class AppointmentRequest extends AdminRequest
         return [
             'student_id' => 'alumno',
             'service_id' => 'servicio',
+            'teacher_id' => 'maestro',
             'subject' => 'materia',
             'date' => 'fecha',
             'time' => 'hora',

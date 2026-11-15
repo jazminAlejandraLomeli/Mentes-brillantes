@@ -1,4 +1,4 @@
-import { RainbowMark } from '@/components/brand/rainbow-mark';
+import { BrandLogo } from '@/components/brand/brand-logo';
 import { Link } from '@inertiajs/react';
 
 interface AuthLayoutProps {
@@ -15,8 +15,7 @@ export default function AuthSimpleLayout({ children, title, description }: AuthL
                 <div className="flex flex-col gap-8 rounded-3xl bg-white p-7 shadow-xl ring-1 shadow-black/5 ring-black/5 sm:p-8">
                     <div className="flex flex-col items-center gap-4">
                         <Link href={route('home')} className="flex flex-col items-center gap-2">
-                            <RainbowMark className="h-10" />
-                            <span className="font-heading text-brand-primary-strong text-lg font-bold">Mentes Brillantes</span>
+                            <BrandLogo />
                         </Link>
 
                         <div className="space-y-1.5 text-center">

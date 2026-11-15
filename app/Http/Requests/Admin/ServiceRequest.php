@@ -3,7 +3,7 @@
 namespace App\Http\Requests\Admin;
 
 use App\Enums\Modality;
-use App\Enums\ServiceCategory;
+use App\Support\ServiceCategories;
 use Illuminate\Validation\Rule;
 
 class ServiceRequest extends AdminRequest
@@ -15,7 +15,7 @@ class ServiceRequest extends AdminRequest
     {
         return [
             'title' => ['required', 'string', 'max:120'],
-            'category' => ['required', Rule::enum(ServiceCategory::class)],
+            'category' => ['required', Rule::in(ServiceCategories::keys())],
             'short_description' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string', 'max:5000'],
             'age_min' => ['nullable', 'integer', 'min:1', 'max:99'],

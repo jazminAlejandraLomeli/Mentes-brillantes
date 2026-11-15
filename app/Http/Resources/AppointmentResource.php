@@ -24,6 +24,7 @@ class AppointmentResource extends JsonResource
             'id' => $this->id,
             'student_id' => $this->student_id,
             'service_id' => $this->service_id,
+            'teacher_id' => $this->teacher_id,
             'appointment_series_id' => $this->appointment_series_id,
             'subject' => $this->subject,
             'topic' => $this->topic(),
@@ -41,6 +42,11 @@ class AppointmentResource extends JsonResource
             'notes' => $this->notes,
             'reminder_sent_at' => $this->reminder_sent_at?->toIso8601String(),
             'student' => new StudentResource($this->whenLoaded('student')),
+            'teacher' => $this->whenLoaded('teacher', fn () => $this->teacher ? [
+                'id' => $this->teacher->id,
+                'name' => $this->teacher->name,
+                'color' => $this->teacher->color,
+            ] : null),
             'service' => $this->whenLoaded('service', fn () => $this->service ? [
                 'id' => $this->service->id,
                 'title' => $this->service->title,

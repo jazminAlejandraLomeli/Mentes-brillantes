@@ -11,7 +11,15 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '
 import { Input } from '@/components/ui/input';
 import { PhoneInput } from '@/components/ui/phone-input';
 import AppLayout from '@/layouts/app-layout';
-import { type Appointment, type AppointmentSeries, type ServiceOption, type StatusOption, type Student, type StudentOption } from '@/types/admin';
+import {
+    type Appointment,
+    type AppointmentSeries,
+    type ServiceOption,
+    type StatusOption,
+    type Student,
+    type StudentOption,
+    type TeacherOption,
+} from '@/types/admin';
 import { Head, Link, useForm } from '@inertiajs/react';
 import { CalendarPlus, LoaderCircle, Pencil, Repeat, School, StickyNote, Trash2, UserRound } from 'lucide-react';
 import { type FormEventHandler, useState } from 'react';
@@ -24,9 +32,10 @@ interface Props {
     studentOptions: StudentOption[];
     services: ServiceOption[];
     statuses: StatusOption[];
+    teachers: TeacherOption[];
 }
 
-export default function StudentShow({ student, upcoming, history, series, studentOptions, services, statuses }: Props) {
+export default function StudentShow({ student, upcoming, history, series, studentOptions, services, statuses, teachers }: Props) {
     const [newOpen, setNewOpen] = useState(false);
     const [seriesOpen, setSeriesOpen] = useState(false);
     const [editing, setEditing] = useState<Appointment | null>(null);
@@ -213,11 +222,19 @@ export default function StudentShow({ student, upcoming, history, series, studen
                 </div>
             </PageBody>
 
-            <AppointmentDialog open={newOpen} onOpenChange={setNewOpen} defaultStudentId={student.id} students={studentOptions} services={services} />
+            <AppointmentDialog
+                open={newOpen}
+                onOpenChange={setNewOpen}
+                defaultStudentId={student.id}
+                teachers={teachers}
+                students={studentOptions}
+                services={services}
+            />
             <AppointmentDialog
                 open={editing !== null}
                 onOpenChange={(open) => !open && setEditing(null)}
                 appointment={editing}
+                teachers={teachers}
                 students={studentOptions}
                 services={services}
                 statuses={statuses}
@@ -226,6 +243,7 @@ export default function StudentShow({ student, upcoming, history, series, studen
                 open={seriesOpen}
                 onOpenChange={setSeriesOpen}
                 defaultStudentId={student.id}
+                teachers={teachers}
                 students={studentOptions}
                 services={services}
             />

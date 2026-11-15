@@ -10,7 +10,9 @@ declare global {
     const route: typeof routeFn;
 }
 
-const appName = import.meta.env.VITE_APP_NAME || 'Mentes Brillantes by Liz';
+// El nombre del negocio viene de config/site.json (se manda en la primera carga de la página)
+const initialPage = JSON.parse(document.getElementById('app')?.dataset.page ?? '{}');
+const appName: string = initialPage?.props?.name || import.meta.env.VITE_APP_NAME || 'Mi escuela';
 
 createInertiaApp({
     title: (title) => (title ? `${title} · ${appName}` : appName),

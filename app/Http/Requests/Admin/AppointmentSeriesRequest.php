@@ -3,6 +3,8 @@
 namespace App\Http\Requests\Admin;
 
 use App\Actions\Appointments\CreateAppointmentSeries;
+use App\Support\SiteConfig;
+use Illuminate\Validation\Rule;
 
 /**
  * Clase recurrente: "lunes y miércoles a las 5:00 pm, 10 sesiones".
@@ -17,6 +19,7 @@ class AppointmentSeriesRequest extends AdminRequest
         return [
             'student_id' => ['required', 'integer', 'exists:students,id'],
             'service_id' => ['nullable', 'integer', 'exists:services,id'],
+            'teacher_id' => [Rule::requiredIf(SiteConfig::multiTeacher()), 'nullable', 'integer', 'exists:teachers,id'],
             'subject' => ['nullable', 'string', 'max:120'],
             'weekdays' => ['required', 'array', 'min:1', 'max:7'],
             'weekdays.*' => ['integer', 'between:1,7', 'distinct'],
@@ -37,6 +40,7 @@ class AppointmentSeriesRequest extends AdminRequest
         return [
             'student_id' => 'alumno',
             'service_id' => 'servicio',
+            'teacher_id' => 'maestro',
             'subject' => 'materia',
             'weekdays' => 'días de la semana',
             'start_time' => 'hora',

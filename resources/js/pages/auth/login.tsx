@@ -1,4 +1,5 @@
-import { Head, useForm } from '@inertiajs/react';
+import { type SharedData } from '@/types';
+import { Head, useForm, usePage } from '@inertiajs/react';
 import { LoaderCircle } from 'lucide-react';
 import { FormEventHandler } from 'react';
 
@@ -22,6 +23,7 @@ interface LoginProps {
 }
 
 export default function Login({ status, canResetPassword }: LoginProps) {
+    const { site } = usePage<SharedData>().props;
     const { data, setData, post, processing, errors, reset } = useForm<LoginForm>({
         email: '',
         password: '',
@@ -36,7 +38,7 @@ export default function Login({ status, canResetPassword }: LoginProps) {
     };
 
     return (
-        <AuthLayout title="¡Hola, Liz! 👋" description="Entra a tu panel para administrar tu página y tu agenda">
+        <AuthLayout title={`¡Hola, ${site.business.owner}! 👋`} description="Entra a tu panel para administrar tu página y tu agenda">
             <Head title="Iniciar sesión" />
 
             {status && <div className="text-center text-sm font-medium text-green-600">{status}</div>}

@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Enums\AppointmentStatus;
 use App\Models\Appointment;
 use App\Models\AppointmentSeries;
+use App\Support\SiteConfig;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 
@@ -87,11 +88,12 @@ class AppointmentService
 
     /**
      * Otras clases activas que se enciman con este horario (solo para avisar,
-     * no bloquea: Liz puede dar clases a varios niños a la vez).
+     * no bloquea: se puede dar clase a varios niños a la vez).
+     * En salones con varios maestros solo cuentan las del mismo maestro.
      *
      * @return Collection<int, Appointment>
      */
-    public function conflicts(Carbon $startsAt, int $durationMinutes, ?int $ignoreId = null): Collection
+    public function conflicts(Carbon $startsAt, int $durationMinutes, ?int $ignoreId = null, ?int $teacherId = null): Collection
     {
         $endsAt = $startsAt->copy()->addMinutes($durationMinutes);
 
@@ -99,6 +101,7 @@ class AppointmentService
             ->with('student')
             ->active()
             ->when($ignoreId, fn ($q) => $q->whereKeyNot($ignoreId))
+            ->when(SiteConfig::multiTeacher() && $teacherId, fn ($q) => $q->where('teacher_id', $teacherId))
             ->whereBetween('starts_at', [$startsAt->copy()->subHours(8), $endsAt])
             ->get()
             ->filter(fn (Appointment $a) => $a->starts_at->lt($endsAt) && $a->endsAt()->gt($startsAt))

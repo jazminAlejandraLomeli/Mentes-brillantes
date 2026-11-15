@@ -32,6 +32,7 @@ const VARIABLE_HELP: Record<string, string> = {
     fecha: 'Día de la clase',
     hora: 'Hora de la clase',
     firma: 'Tu firma',
+    maestro: 'Maestro de la clase',
 };
 
 export default function Messages({ templates, defaults, variables }: Props) {
@@ -45,6 +46,7 @@ export default function Messages({ templates, defaults, variables }: Props) {
         fecha: 'lunes 16 de noviembre',
         hora: '5:00 pm',
         firma: site.business.signature,
+        maestro: site.features?.multi_teacher ? 'Miss Karla' : site.business.owner,
     };
     const render = (text: string) => text.replace(/\{(\w+)\}/g, (match, key: string) => sample[key] ?? match);
 

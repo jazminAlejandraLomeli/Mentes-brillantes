@@ -3,11 +3,11 @@
 namespace Database\Seeders;
 
 use App\Enums\Modality;
-use App\Enums\ServiceCategory;
 use App\Models\Banner;
 use App\Models\Event;
 use App\Models\GalleryItem;
 use App\Models\Service;
+use App\Models\Teacher;
 use Database\Seeders\Support\PlaceholderImage;
 use Illuminate\Database\Seeder;
 
@@ -22,6 +22,7 @@ class ContentSeeder extends Seeder
         $this->seedServices();
         $this->seedEvents();
         $this->seedGallery();
+        $this->seedTeachers();
     }
 
     private function seedBanners(): void
@@ -47,7 +48,7 @@ class ContentSeeder extends Seeder
         $services = [
             [
                 'title' => 'Regularización de primaria',
-                'category' => ServiceCategory::Regularization,
+                'category' => 'regularization',
                 'short_description' => 'Reforzamos matemáticas, español y tareas con un plan a la medida de cada niño.',
                 'description' => "Detectamos en qué temas necesita apoyo y avanzamos a su ritmo.\nIncluye seguimiento con los papás y material de práctica.",
                 'age_min' => 6, 'age_max' => 12, 'modality' => Modality::Hybrid,
@@ -55,35 +56,35 @@ class ContentSeeder extends Seeder
             ],
             [
                 'title' => 'Regularización de secundaria',
-                'category' => ServiceCategory::Regularization,
+                'category' => 'regularization',
                 'short_description' => 'Apoyo en matemáticas, álgebra y preparación para exámenes.',
                 'age_min' => 12, 'age_max' => 15, 'modality' => Modality::Hybrid,
                 'price' => 280, 'price_note' => 'por sesión de 1 hora', 'show_price' => true,
             ],
             [
                 'title' => 'Lectoescritura',
-                'category' => ServiceCategory::Regularization,
+                'category' => 'regularization',
                 'short_description' => 'Aprender a leer y escribir con juegos, cuentos y mucha paciencia.',
                 'age_min' => 4, 'age_max' => 7, 'modality' => Modality::InPerson,
                 'price' => 230, 'price_note' => 'por sesión', 'show_price' => false, 'is_featured' => true,
             ],
             [
                 'title' => 'Taller de manualidades',
-                'category' => ServiceCategory::Workshop,
+                'category' => 'workshop',
                 'short_description' => 'Pintura, recortes y reciclaje para desarrollar creatividad y motricidad fina.',
                 'age_min' => 4, 'age_max' => 10, 'modality' => Modality::InPerson,
                 'price' => 180, 'price_note' => 'por taller, material incluido', 'show_price' => true,
             ],
             [
                 'title' => 'Taller de hábitos de estudio',
-                'category' => ServiceCategory::Workshop,
+                'category' => 'workshop',
                 'short_description' => 'Técnicas sencillas para organizarse, concentrarse y hacer la tarea sin pleitos.',
                 'age_min' => 8, 'age_max' => 13, 'modality' => Modality::Online,
                 'show_price' => false,
             ],
             [
                 'title' => 'Curso de verano "Mentes Brillantes"',
-                'category' => ServiceCategory::SummerCourse,
+                'category' => 'summer_course',
                 'short_description' => 'Cuatro semanas de actividades, lectura, juegos y manualidades.',
                 'description' => 'De lunes a viernes de 9:00 a 13:00 h. Incluye material y una muestra final para los papás.',
                 'age_min' => 5, 'age_max' => 11, 'modality' => Modality::InPerson,
@@ -160,5 +161,20 @@ class ContentSeeder extends Seeder
                 'is_active' => true,
             ]);
         }
+    }
+
+    /**
+     * Perfil de ejemplo. Trayectoria, formación y foto los llena la maestra desde el panel.
+     */
+    private function seedTeachers(): void
+    {
+        Teacher::create([
+            'name' => 'Miss Liz',
+            'full_name' => 'Lizbeth Glez Ulloa',
+            'title' => 'Licenciada · Maestra de regularización',
+            'specialties' => ['Regularización', 'Manualidades', 'Cursos de verano'],
+            'show_on_website' => true,
+            'sort_order' => 0,
+        ]);
     }
 }

@@ -46,6 +46,41 @@ class ImageUploader
     }
 
     /**
+     * Icono cuadrado en PNG (para la pestaña del navegador / celular):
+     * la imagen se acomoda centrada, sin recortarse, con fondo transparente.
+     *
+     * @return string|null Ruta guardada, o null si el servidor no tiene GD
+     */
+    public function storeSquareIcon(UploadedFile $file, string $folder, int $size): ?string
+    {
+        $image = $this->load($file);
+
+        if ($image === null) {
+            return null;
+        }
+
+        $image = $this->fixOrientation($image, $file);
+        [$width, $height] = [imagesx($image), imagesy($image)];
+        $scale = min($size / $width, $size / $height);
+        [$w, $h] = [max(1, (int) round($width * $scale)), max(1, (int) round($height * $scale))];
+
+        $canvas = imagecreatetruecolor($size, $size);
+        imagealphablending($canvas, false);
+        imagesavealpha($canvas, true);
+        imagefill($canvas, 0, 0, (int) imagecolorallocatealpha($canvas, 0, 0, 0, 127));
+        imagecopyresampled($canvas, $image, (int) (($size - $w) / 2), (int) (($size - $h) / 2), 0, 0, $w, $h, $width, $height);
+
+        ob_start();
+        imagepng($canvas);
+        $contents = (string) ob_get_clean();
+
+        $path = trim($folder, '/').'/icon-'.$size.'-'.Str::random(8).'.png';
+        Storage::disk(self::DISK)->put($path, $contents);
+
+        return $path;
+    }
+
+    /**
      * Sube la nueva imagen y borra la anterior.
      */
     public function replace(?string $oldPath, UploadedFile $file, string $folder, int $maxWidth = 1600): string

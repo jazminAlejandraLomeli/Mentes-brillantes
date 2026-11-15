@@ -1,6 +1,7 @@
 import { ConfirmDelete } from '@/components/admin/confirm-delete';
 import { FormCard, FormField } from '@/components/admin/form-field';
 import { PageBody, PageHeader } from '@/components/admin/page-header';
+import { BrandMark } from '@/components/brand/brand-logo';
 import { RainbowMark } from '@/components/brand/rainbow-mark';
 import { WhatsAppIcon } from '@/components/brand/whatsapp-icon';
 import InputError from '@/components/input-error';
@@ -10,9 +11,9 @@ import { NativeSelect } from '@/components/ui/native-select';
 import AppLayout from '@/layouts/app-layout';
 import { isHex, mix, readableOnWhite } from '@/lib/colors';
 import { cn } from '@/lib/utils';
-import { type ThemeSettings } from '@/types';
-import { Head, useForm } from '@inertiajs/react';
-import { Check, LoaderCircle, RotateCcw, Save } from 'lucide-react';
+import { type SharedData, type ThemeSettings } from '@/types';
+import { Head, useForm, usePage } from '@inertiajs/react';
+import { Check, ImagePlus, LoaderCircle, RotateCcw, Save, Trash2 } from 'lucide-react';
 import { type CSSProperties, type FormEventHandler, useEffect } from 'react';
 
 interface FontOption {
@@ -48,6 +49,7 @@ const COLOR_FIELDS: { key: keyof ThemeSettings; label: string; hint: string }[] 
 ];
 
 export default function Appearance({ current, fonts, presets }: Props) {
+    const { site } = usePage<SharedData>().props;
     const { data, setData, put, processing, errors, isDirty, recentlySuccessful } = useForm<ThemeSettings>({ ...current });
 
     // Carga todas las fuentes para poder previsualizarlas
@@ -96,17 +98,17 @@ export default function Appearance({ current, fonts, presets }: Props) {
     } as CSSProperties;
 
     return (
-        <AppLayout breadcrumbs={[{ title: 'Colores y letras', href: route('admin.settings.appearance') }]}>
-            <Head title="Colores y letras" />
+        <AppLayout breadcrumbs={[{ title: 'Colores, letras y logo', href: route('admin.settings.appearance') }]}>
+            <Head title="Colores, letras y logo" />
             <PageBody>
                 <PageHeader
-                    title="Colores y letras"
+                    title="Colores, letras y logo"
                     description="Cambia cómo se ve tu página. A la derecha ves cómo va quedando antes de guardar."
                     actions={
                         <ConfirmDelete
                             url={route('admin.settings.appearance.reset')}
                             title="¿Regresar a los colores originales?"
-                            description="Se restaurará «Arcoíris de Liz» con las letras Quicksand y Nunito."
+                            description="Se restaurará la combinación «Arcoíris» con las letras Quicksand y Nunito."
                             confirmLabel="Sí, restaurar"
                             trigger={
                                 <Button variant="outline" className="rounded-full">
@@ -119,6 +121,7 @@ export default function Appearance({ current, fonts, presets }: Props) {
 
                 <form onSubmit={submit} className="grid gap-6 xl:grid-cols-[1fr_420px]">
                     <div className="grid content-start gap-6">
+                        <LogoCard />
                         <FormCard title="Combinaciones pastel" description="Elige una con un clic y, si quieres, ajusta los colores abajo.">
                             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
                                 {presets.map((p) => (
@@ -204,8 +207,8 @@ export default function Appearance({ current, fonts, presets }: Props) {
                         >
                             <div className="flex items-center justify-between px-4 py-3">
                                 <span className="flex items-center gap-2">
-                                    <RainbowMark className="h-5" />
-                                    <span className="font-heading text-brand-primary-strong text-sm font-bold">Mentes Brillantes</span>
+                                    <BrandMark className="h-5 w-auto max-w-24" />
+                                    <span className="font-heading text-brand-primary-strong text-sm font-bold">{site.business.name}</span>
                                 </span>
                                 <span className="bg-brand-primary-strong rounded-full px-3 py-1 text-[0.65rem] font-bold text-white">
                                     Agenda una clase
@@ -308,5 +311,64 @@ function FontPicker({
             </p>
             <InputError message={error} />
         </div>
+    );
+}
+
+/**
+ * Logo del negocio. Se guarda al instante (no depende del botón "Guardar cambios").
+ */
+function LogoCard() {
+    const { brand, site } = usePage<SharedData>().props;
+    const { post, processing, errors, reset, progress, transform } = useForm<{ logo: File | null }>({ logo: null });
+
+    const upload = (file: File | undefined) => {
+        if (!file) return;
+        // El archivo se pone justo al enviar (sin esperar a que el formulario se actualice)
+        transform(() => ({ logo: file }));
+        post(route('admin.settings.logo.update'), { forceFormData: true, preserveScroll: true, onFinish: () => reset() });
+    };
+
+    return (
+        <FormCard title="Logo" description="Aparece arriba de tu página, en el panel y como icono de la pestaña del navegador.">
+            <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
+                <div className="bg-muted flex h-28 w-full shrink-0 items-center justify-center rounded-2xl border p-3 sm:w-48">
+                    {brand.logo_url ? (
+                        <img src={brand.logo_url} alt={`Logo de ${site.business.name}`} className="max-h-full max-w-full object-contain" />
+                    ) : (
+                        <span className="text-muted-foreground text-center text-xs">Sin logo: se usa el arcoíris</span>
+                    )}
+                </div>
+                <div className="grid gap-2">
+                    <div className="flex flex-wrap gap-2">
+                        <label className="bg-primary text-primary-foreground hover:bg-primary/90 inline-flex cursor-pointer items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold">
+                            {processing ? <LoaderCircle className="size-4 animate-spin" /> : <ImagePlus className="size-4" />}
+                            {processing && progress ? `Subiendo ${progress.percentage}%` : brand.logo_url ? 'Cambiar logo' : 'Subir logo'}
+                            <input
+                                type="file"
+                                accept="image/png,image/jpeg,image/webp"
+                                className="sr-only"
+                                disabled={processing}
+                                onChange={(e) => upload(e.target.files?.[0])}
+                            />
+                        </label>
+                        {brand.logo_url && (
+                            <ConfirmDelete
+                                url={route('admin.settings.logo.remove')}
+                                title="¿Quitar el logo?"
+                                description="La página volverá a mostrar el arcoíris y el nombre."
+                                confirmLabel="Sí, quitarlo"
+                                trigger={
+                                    <Button variant="ghost" size="sm" className="rounded-full text-red-600 hover:bg-red-50">
+                                        <Trash2 /> Quitar
+                                    </Button>
+                                }
+                            />
+                        )}
+                    </div>
+                    <p className="text-muted-foreground text-xs">PNG con fondo transparente se ve mejor · máximo 4 MB.</p>
+                    <InputError message={errors.logo} />
+                </div>
+            </div>
+        </FormCard>
     );
 }

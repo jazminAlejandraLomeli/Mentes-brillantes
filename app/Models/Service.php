@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\Enums\Modality;
-use App\Enums\ServiceCategory;
 use App\Models\Concerns\HasImage;
 use App\Models\Concerns\HasSlug;
 use Illuminate\Database\Eloquent\Builder;
@@ -14,7 +13,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property int $id
  * @property string $title
  * @property string $slug
- * @property ServiceCategory $category
+ * @property string $category key de config/site.json → categories
  * @property string $short_description
  * @property string|null $description
  * @property int|null $age_min
@@ -40,7 +39,6 @@ class Service extends Model
     protected function casts(): array
     {
         return [
-            'category' => ServiceCategory::class,
             'modality' => Modality::class,
             'age_min' => 'integer',
             'age_max' => 'integer',

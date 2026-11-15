@@ -10,7 +10,9 @@ use App\Http\Resources\AppointmentResource;
 use App\Models\Appointment;
 use App\Models\Service;
 use App\Models\Student;
+use App\Models\Teacher;
 use App\Services\AppointmentService;
+use App\Support\SiteConfig;
 use App\Support\WhatsAppLink;
 use App\Support\WhatsAppTemplates;
 use Illuminate\Http\RedirectResponse;
@@ -35,6 +37,7 @@ class AppointmentController extends Controller
         $date = $this->parseDate($request->query('date'));
         $status = AppointmentStatus::tryFrom((string) $request->query('status'));
         $studentId = $request->integer('student_id') ?: null;
+        $teacherId = SiteConfig::multiTeacher() ? ($request->integer('teacher_id') ?: null) : null;
 
         [$from, $to] = match ($view) {
             'month' => [$date->copy()->startOfMonth()->startOfWeek(), $date->copy()->endOfMonth()->endOfWeek()],
@@ -43,10 +46,11 @@ class AppointmentController extends Controller
         };
 
         $appointments = Appointment::query()
-            ->with(['student.guardian', 'service'])
+            ->with(['student.guardian', 'service', 'teacher'])
             ->whereBetween('starts_at', [$from, $to])
             ->when($status, fn ($q) => $q->where('status', $status))
             ->when($studentId, fn ($q) => $q->where('student_id', $studentId))
+            ->when($teacherId, fn ($q) => $q->where('teacher_id', $teacherId))
             ->orderBy('starts_at')
             ->get();
 
@@ -55,7 +59,7 @@ class AppointmentController extends Controller
             'view' => $view,
             'date' => $date->toDateString(),
             'range' => ['from' => $from->toDateString(), 'to' => $to->toDateString()],
-            'filters' => ['status' => $status?->value, 'student_id' => $studentId],
+            'filters' => ['status' => $status?->value, 'student_id' => $studentId, 'teacher_id' => $teacherId],
             ...$this->formOptions(),
         ]);
     }
@@ -63,7 +67,7 @@ class AppointmentController extends Controller
     public function store(AppointmentRequest $request): RedirectResponse
     {
         $data = $request->appointmentData();
-        $conflicts = $this->appointments->conflicts($data['starts_at'], $data['duration_minutes']);
+        $conflicts = $this->appointments->conflicts($data['starts_at'], $data['duration_minutes'], null, $data['teacher_id'] ?? null);
         $appointment = $this->appointments->schedule($data);
 
         return back()
@@ -79,7 +83,7 @@ class AppointmentController extends Controller
     public function update(AppointmentRequest $request, Appointment $appointment): RedirectResponse
     {
         $data = $request->appointmentData();
-        $conflicts = $this->appointments->conflicts($data['starts_at'], $data['duration_minutes'], $appointment->id);
+        $conflicts = $this->appointments->conflicts($data['starts_at'], $data['duration_minutes'], $appointment->id, $data['teacher_id'] ?? null);
         $moved = $this->appointments->update($appointment, $data);
 
         $response = back()
@@ -140,6 +144,10 @@ class AppointmentController extends Controller
             'services' => Service::query()->active()->orderBy('title')->get(['id', 'title'])
                 ->map(fn (Service $s) => ['id' => $s->id, 'title' => $s->title]),
             'statuses' => AppointmentStatus::options(),
+            'teachers' => SiteConfig::multiTeacher()
+                ? Teacher::query()->active()->ordered()->get(['id', 'name', 'color'])
+                    ->map(fn (Teacher $t) => ['id' => $t->id, 'name' => $t->name, 'color' => $t->color])
+                : [],
         ];
     }
 
@@ -163,6 +171,8 @@ class AppointmentController extends Controller
 
         $names = $conflicts->map(fn (Appointment $a) => $a->student->firstName().' ('.$a->starts_at->format('H:i').')')->implode(', ');
 
-        return "Ojo: a esa hora también tienes clase con {$names}.";
+        return SiteConfig::multiTeacher()
+            ? "Ojo: ese maestro ya tiene clase a esa hora con {$names}."
+            : "Ojo: a esa hora también tienes clase con {$names}.";
     }
 }

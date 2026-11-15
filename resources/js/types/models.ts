@@ -5,6 +5,7 @@
 export interface Option {
     value: string;
     label: string;
+    color?: BrandColor;
 }
 
 export interface Banner {
@@ -18,7 +19,9 @@ export interface Banner {
     is_active: boolean;
 }
 
-export type ServiceCategory = 'regularization' | 'workshop' | 'summer_course';
+/** key de config/site.json → categories */
+export type ServiceCategory = string;
+export type BrandColor = 'primary' | 'secondary' | 'accent';
 
 export interface Service {
     id: number;
@@ -26,6 +29,7 @@ export interface Service {
     slug: string;
     category: ServiceCategory;
     category_label: string;
+    category_color: BrandColor;
     short_description: string;
     description: string | null;
     age_min: number | null;

@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\GuardianController;
 use App\Http\Controllers\Admin\ServiceController;
 use App\Http\Controllers\Admin\SiteSettingsController;
 use App\Http\Controllers\Admin\StudentController;
+use App\Http\Controllers\Admin\TeacherController;
 use App\Http\Controllers\LandingController;
 use Illuminate\Support\Facades\Route;
 
@@ -54,6 +55,12 @@ Route::middleware('auth')->prefix('panel')->group(function () {
         Route::resource('students', StudentController::class);
         Route::put('guardians/{guardian}', [GuardianController::class, 'update'])->name('guardians.update');
 
+        // --- Maestros (perfil en la página; en salones con varios maestros, también en la agenda) ---
+        Route::patch('teachers/{teacher}/toggle', [TeacherController::class, 'toggle'])->name('teachers.toggle');
+        Route::patch('teachers/{teacher}/website', [TeacherController::class, 'toggleWebsite'])->name('teachers.website');
+        Route::post('teachers/reorder', [TeacherController::class, 'reorder'])->name('teachers.reorder');
+        Route::resource('teachers', TeacherController::class)->except('show');
+
         // --- Agenda ---
         Route::get('appointments', [AppointmentController::class, 'index'])->name('appointments.index');
         Route::post('appointments', [AppointmentController::class, 'store'])->name('appointments.store');
@@ -70,6 +77,8 @@ Route::middleware('auth')->prefix('panel')->group(function () {
         Route::get('settings/appearance', [SiteSettingsController::class, 'appearance'])->name('settings.appearance');
         Route::put('settings/appearance', [SiteSettingsController::class, 'updateAppearance'])->name('settings.appearance.update');
         Route::delete('settings/appearance', [SiteSettingsController::class, 'resetAppearance'])->name('settings.appearance.reset');
+        Route::post('settings/logo', [SiteSettingsController::class, 'updateLogo'])->name('settings.logo.update');
+        Route::delete('settings/logo', [SiteSettingsController::class, 'removeLogo'])->name('settings.logo.remove');
         Route::get('settings/messages', [SiteSettingsController::class, 'messages'])->name('settings.messages');
         Route::put('settings/messages', [SiteSettingsController::class, 'updateMessages'])->name('settings.messages.update');
     });

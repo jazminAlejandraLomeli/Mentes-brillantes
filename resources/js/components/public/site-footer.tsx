@@ -51,7 +51,7 @@ export function SiteFooter({ contactUrl }: { contactUrl: string }) {
 
             <div className="text-brand-text/50 mx-auto flex max-w-6xl flex-col items-center justify-between gap-2 border-t border-black/5 px-4 py-5 text-xs sm:flex-row sm:px-6">
                 <p>
-                    © {new Date().getFullYear()} {site.business.name} · Hecho con 💖 para niños brillantes
+                    © {new Date().getFullYear()} {site.business.name} · Hecho con 💖
                 </p>
                 <Link href={route('login')} className="hover:text-brand-text underline-offset-4 hover:underline">
                     Acceso

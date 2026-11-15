@@ -15,6 +15,7 @@ use Illuminate\Support\Carbon;
  * @property int $id
  * @property int $student_id
  * @property int|null $service_id
+ * @property int|null $teacher_id
  * @property string|null $subject
  * @property list<int> $weekdays ISO: 1 = lunes … 7 = domingo
  * @property string $start_time
@@ -33,7 +34,7 @@ class AppointmentSeries extends Model
     ];
 
     protected $fillable = [
-        'student_id', 'service_id', 'subject', 'weekdays', 'start_time', 'duration_minutes',
+        'student_id', 'service_id', 'teacher_id', 'subject', 'weekdays', 'start_time', 'duration_minutes',
         'starts_on', 'sessions_count', 'ends_on', 'notes',
     ];
 
@@ -58,6 +59,12 @@ class AppointmentSeries extends Model
     public function service(): BelongsTo
     {
         return $this->belongsTo(Service::class);
+    }
+
+    /** @return BelongsTo<Teacher, $this> */
+    public function teacher(): BelongsTo
+    {
+        return $this->belongsTo(Teacher::class);
     }
 
     /** @return HasMany<Appointment, $this> */

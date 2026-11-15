@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use App\Models\Service;
+use App\Support\ServiceCategories;
 use App\Support\WhatsAppLink;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -31,8 +32,9 @@ class ServiceResource extends JsonResource
             'id' => $this->id,
             'title' => $this->title,
             'slug' => $this->slug,
-            'category' => $this->category->value,
-            'category_label' => $this->category->label(),
+            'category' => $this->category,
+            'category_label' => ServiceCategories::label($this->category),
+            'category_color' => ServiceCategories::color($this->category),
             'short_description' => $this->short_description,
             'description' => $this->description,
             'age_min' => $this->age_min,

@@ -14,6 +14,7 @@ use Illuminate\Support\Carbon;
  * @property int $id
  * @property int $student_id
  * @property int|null $service_id
+ * @property int|null $teacher_id
  * @property int|null $appointment_series_id
  * @property string|null $subject
  * @property Carbon $starts_at
@@ -23,11 +24,12 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $reminder_sent_at
  * @property-read Student $student
  * @property-read Service|null $service
+ * @property-read Teacher|null $teacher
  */
 class Appointment extends Model
 {
     protected $fillable = [
-        'student_id', 'service_id', 'appointment_series_id', 'subject', 'starts_at',
+        'student_id', 'service_id', 'teacher_id', 'appointment_series_id', 'subject', 'starts_at',
         'duration_minutes', 'status', 'notes', 'reminder_sent_at',
     ];
 
@@ -56,6 +58,12 @@ class Appointment extends Model
     public function service(): BelongsTo
     {
         return $this->belongsTo(Service::class);
+    }
+
+    /** @return BelongsTo<Teacher, $this> */
+    public function teacher(): BelongsTo
+    {
+        return $this->belongsTo(Teacher::class);
     }
 
     /** @return BelongsTo<AppointmentSeries, $this> */

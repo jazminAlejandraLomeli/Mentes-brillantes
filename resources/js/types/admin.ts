@@ -36,6 +36,7 @@ export interface Appointment {
     id: number;
     student_id: number;
     service_id: number | null;
+    teacher_id: number | null;
     appointment_series_id: number | null;
     subject: string | null;
     topic: string;
@@ -54,6 +55,7 @@ export interface Appointment {
     reminder_sent_at: string | null;
     student?: Student;
     service?: { id: number; title: string } | null;
+    teacher?: TeacherOption | null;
     whatsapp?: { reminder: string; cancellation: string; reschedule: string };
 }
 
@@ -84,6 +86,31 @@ export interface StudentOption {
     id: number;
     name: string;
     guardian: string | null;
+}
+
+export interface TeacherOption {
+    id: number;
+    name: string;
+    color: string;
+}
+
+/** Perfil público del maestro (también lo usa la página) */
+export interface TeacherProfile extends TeacherOption {
+    full_name: string | null;
+    title: string | null;
+    photo_url: string | null;
+    bio: string | null;
+    education: string | null;
+    education_list: string[];
+    specialties: string[];
+}
+
+export interface Teacher extends TeacherProfile {
+    whatsapp_phone: string | null;
+    whatsapp_phone_formatted: string | null;
+    is_active: boolean;
+    show_on_website: boolean;
+    upcoming_count?: number;
 }
 
 export interface ServiceOption {

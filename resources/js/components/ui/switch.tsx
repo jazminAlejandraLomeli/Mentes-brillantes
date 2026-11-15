@@ -26,7 +26,7 @@ export function Switch({ checked, onCheckedChange, id, label, disabled, classNam
                 className,
             )}
         >
-            <span className={cn('size-5 rounded-full bg-white shadow transition-transform', checked ? 'translate-x-5.5' : 'translate-x-0.5')} />
+            <span className={cn('size-5 rounded-full shadow transition-transform', checked ? 'bg-primary-foreground translate-x-5.5' : 'translate-x-0.5 bg-white')} />
         </button>
     );
 }
