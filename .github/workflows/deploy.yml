@@ -25,16 +25,23 @@ jobs:
       APP_DIR: domains/jazmin-lomeli.com/demo-app
     steps:
       - name: Preparar la llave SSH
+        env:
+          KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          KNOWN: ${{ secrets.SSH_KNOWN_HOSTS }}
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_deploy
+          printf '%s\n' "$KEY" | tr -d '\r' > ~/.ssh/id_deploy
           chmod 600 ~/.ssh/id_deploy
-          echo "${{ secrets.SSH_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
+          # Quita espacios sobrantes o comillas invertidas (`) que se cuelan al copiar
+          printf '%s\n' "$KNOWN" | tr -d '\r`' | sed 's/^ *//; s/ *$//' > ~/.ssh/known_hosts
 
       - name: Correr deploy.sh en Hostinger
+        env:
+          HOST: ${{ secrets.SSH_HOST }}
         run: |
+          HOST=$(printf '%s' "$HOST" | tr -d ' \r\n\t`')
           ssh -i ~/.ssh/id_deploy -o IdentitiesOnly=yes -o BatchMode=yes -o StrictHostKeyChecking=yes \
-            -p "$SSH_PORT" "${{ secrets.SSH_HOST }}" "cd ~/$APP_DIR && bash deploy.sh"
+            -p "$SSH_PORT" "$HOST" "cd ~/$APP_DIR && bash deploy.sh"
 
       - name: Revisar que el sitio responda
         run: |
