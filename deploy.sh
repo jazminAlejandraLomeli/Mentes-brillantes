@@ -24,6 +24,14 @@ echo "→ Instalando dependencias de PHP…"
 echo "→ Actualizando la base de datos…"
 "$PHP_BIN" artisan migrate --force
 
+# Enlace para que se vean las fotos que se suben desde el panel.
+# Con PHP 8.5 Hostinger bloquea symlink() y `artisan storage:link` falla,
+# así que se crea con la consola.
+if [ ! -e public/storage ]; then
+  echo "→ Creando el enlace de las fotos (public/storage)…"
+  ln -s "$PWD/storage/app/public" public/storage
+fi
+
 echo "→ Optimizando…"
 "$PHP_BIN" artisan optimize:clear
 "$PHP_BIN" artisan optimize

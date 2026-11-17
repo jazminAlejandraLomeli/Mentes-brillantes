@@ -107,8 +107,11 @@ php artisan migrate --seed --force
 ```
 
 ```bash
-php artisan storage:link
+ln -s "$PWD/storage/app/public" public/storage
 ```
+
+> Con PHP 8.5 Hostinger bloquea `php artisan storage:link` (falla sin avisar),
+> por eso el enlace de las fotos se crea con `ln -s`. `deploy.sh` también lo crea si falta.
 
 ```bash
 php artisan optimize
@@ -163,7 +166,7 @@ cd ~/domains/tudominio.com/demo-app && php artisan demo:reset
 ## 7. Revisar que todo funcione
 
 - [ ] `https://demo.tudominio.com` abre la página con el aviso negro de **demo** arriba
-- [ ] Se ven las imágenes (si no, repite `php artisan storage:link`)
+- [ ] Se ven las imágenes (si no, corre `bash deploy.sh`: crea el enlace de las fotos)
 - [ ] `/login` muestra el acceso de demostración y entra al panel
 - [ ] Subir una foto en Galería funciona
 - [ ] El botón de WhatsApp abre el chat
@@ -175,7 +178,7 @@ cd ~/domains/tudominio.com/demo-app && php artisan demo:reset
 | **Error 500** | Revisa `storage/logs/laravel.log`. Casi siempre es el `.env` (datos de la base) |
 | Página en blanco o sin estilos | Faltó `npm run build` antes del `push`, o no se subió `public/build` |
 | Se ve la lista de carpetas o el código | El subdominio no apunta a `public` (paso 4) |
-| Las fotos no cargan | `php artisan storage:link` y revisa que `APP_URL` tenga tu subdominio con `https` |
+| Las fotos no cargan | `bash deploy.sh` (crea el enlace `public/storage`) y revisa que `APP_URL` tenga tu subdominio con `https` |
 | `composer` dice que la versión de PHP no alcanza | Usa la ruta de PHP 8.4 (`/opt/alt/php84/usr/bin/php`) |
 | "Access denied" de la base | Al nombre o al usuario les falta el prefijo `u123456789_` |
 
