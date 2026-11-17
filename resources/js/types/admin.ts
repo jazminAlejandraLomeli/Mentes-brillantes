@@ -113,6 +113,23 @@ export interface Teacher extends TeacherProfile {
     upcoming_count?: number;
 }
 
+/** Sucursal (también la usa la página en "Visítanos") */
+export interface Location {
+    id: number;
+    name: string | null;
+    address: string;
+    landmark: string | null;
+    schedule: string | null;
+    schedule_list: string[];
+    whatsapp_phone: string | null;
+    whatsapp_phone_formatted: string | null;
+    whatsapp_url: string | null;
+    maps_url: string | null;
+    directions_url: string;
+    map_embed_url: string;
+    is_active: boolean;
+}
+
 export interface ServiceOption {
     id: number;
     title: string;

@@ -6,6 +6,7 @@ use App\Enums\Modality;
 use App\Models\Banner;
 use App\Models\Event;
 use App\Models\GalleryItem;
+use App\Models\Location;
 use App\Models\Service;
 use App\Models\Teacher;
 use Database\Seeders\Support\PlaceholderImage;
@@ -23,6 +24,7 @@ class ContentSeeder extends Seeder
         $this->seedEvents();
         $this->seedGallery();
         $this->seedTeachers();
+        $this->seedLocations();
     }
 
     private function seedBanners(): void
@@ -174,6 +176,21 @@ class ContentSeeder extends Seeder
             'title' => 'Licenciada · Maestra de regularización',
             'specialties' => ['Regularización', 'Manualidades', 'Cursos de verano'],
             'show_on_website' => true,
+            'sort_order' => 0,
+        ]);
+    }
+
+    /**
+     * Sucursal de ejemplo. Liz pone la dirección real desde el panel (Sucursales).
+     */
+    private function seedLocations(): void
+    {
+        Location::create([
+            'name' => 'Sucursal Centro',
+            'address' => 'Av. Juárez 123, Col. Centro, Tepatitlán de Morelos, Jal.',
+            'landmark' => 'Frente a la plaza principal, segundo piso',
+            'schedule' => "Lunes a viernes · 3:00 a 8:00 pm\nSábados · 9:00 am a 1:00 pm",
+            'is_active' => true,
             'sort_order' => 0,
         ]);
     }

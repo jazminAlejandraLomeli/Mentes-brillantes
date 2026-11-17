@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\EventController;
 use App\Http\Controllers\Admin\GalleryItemController;
 use App\Http\Controllers\Admin\GuardianController;
+use App\Http\Controllers\Admin\LocationController;
 use App\Http\Controllers\Admin\ServiceController;
 use App\Http\Controllers\Admin\SiteSettingsController;
 use App\Http\Controllers\Admin\StudentController;
@@ -50,6 +51,11 @@ Route::middleware('auth')->prefix('panel')->group(function () {
         Route::resource('gallery', GalleryItemController::class)
             ->only(['index', 'store', 'update', 'destroy'])
             ->parameters(['gallery' => 'galleryItem']);
+
+        // --- Sucursales (sección "Visítanos") ---
+        Route::patch('locations/{location}/toggle', [LocationController::class, 'toggle'])->name('locations.toggle');
+        Route::post('locations/reorder', [LocationController::class, 'reorder'])->name('locations.reorder');
+        Route::resource('locations', LocationController::class)->except('show');
 
         // --- Alumnos y familias ---
         Route::resource('students', StudentController::class);

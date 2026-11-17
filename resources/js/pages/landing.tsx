@@ -4,12 +4,13 @@ import { GallerySection } from '@/components/public/gallery-section';
 import { HeroCarousel } from '@/components/public/hero-carousel';
 import { HeroIntro } from '@/components/public/hero-intro';
 import { HighlightsSection } from '@/components/public/highlights-section';
+import { LocationsSection } from '@/components/public/locations-section';
 import { ServicesSection } from '@/components/public/services-section';
 import { TeachersSection } from '@/components/public/teachers-section';
 import { WhatsAppButton } from '@/components/public/whatsapp-button';
 import PublicLayout from '@/layouts/public-layout';
 import { type SharedData } from '@/types';
-import { type TeacherProfile } from '@/types/admin';
+import { type Location, type TeacherProfile } from '@/types/admin';
 import { type Banner, type GalleryItem, type Option, type Service, type SiteEvent } from '@/types/models';
 import { Head, usePage } from '@inertiajs/react';
 import { motion } from 'motion/react';
@@ -21,12 +22,13 @@ interface LandingProps {
     events: SiteEvent[];
     gallery: GalleryItem[];
     teachers: TeacherProfile[];
+    locations: Location[];
     contactUrl: string;
     [key: string]: unknown;
 }
 
 export default function Landing() {
-    const { banners, services, categories, events, gallery, teachers, contactUrl, site } = usePage<SharedData & LandingProps>().props;
+    const { banners, services, categories, events, gallery, teachers, locations, contactUrl, site } = usePage<SharedData & LandingProps>().props;
 
     // El menú solo muestra las secciones que tienen contenido
     const links = [
@@ -34,6 +36,7 @@ export default function Landing() {
         services.length > 0 && { href: '#servicios', label: 'Clases y cursos' },
         events.length > 0 && { href: '#eventos', label: 'Eventos' },
         gallery.length > 0 && { href: '#galeria', label: 'Galería' },
+        locations.length > 0 && { href: '#visitanos', label: locations.length > 1 ? 'Sucursales' : 'Ubicación' },
         { href: '#contacto', label: 'Contacto' },
     ].filter((link): link is { href: string; label: string } => Boolean(link));
 
@@ -59,6 +62,7 @@ export default function Landing() {
             <ServicesSection services={services} categories={categories} />
             <EventsSection events={events} />
             <GallerySection items={gallery} />
+            <LocationsSection locations={locations} />
 
             {/* Llamado final antes del pie de página */}
             <section aria-label="Contacto" className="mx-auto max-w-6xl px-4 pb-10 sm:px-6">

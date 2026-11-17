@@ -1,8 +1,10 @@
 import { BrandLogo } from '@/components/brand/brand-logo';
 import { WhatsAppIcon } from '@/components/brand/whatsapp-icon';
+import { cn } from '@/lib/utils';
 import { type SharedData } from '@/types';
+import { type Location } from '@/types/admin';
 import { Link, usePage } from '@inertiajs/react';
-import { Facebook, Instagram, Music2 } from 'lucide-react';
+import { Facebook, Instagram, MapPin, Music2 } from 'lucide-react';
 import { type ComponentType } from 'react';
 
 interface SocialLink {
@@ -12,7 +14,7 @@ interface SocialLink {
 }
 
 export function SiteFooter({ contactUrl }: { contactUrl: string }) {
-    const { site } = usePage<SharedData>().props;
+    const { site, locations = [] } = usePage<SharedData & { locations?: Location[] }>().props;
 
     const social: SocialLink[] = [
         { label: 'Instagram', href: site.social.instagram, icon: Instagram },
@@ -23,11 +25,40 @@ export function SiteFooter({ contactUrl }: { contactUrl: string }) {
 
     return (
         <footer id="contacto" className="border-brand-primary-soft relative mt-8 border-t-4 bg-white/70">
-            <div className="mx-auto grid max-w-6xl gap-10 px-4 py-12 sm:px-6 md:grid-cols-[1.4fr_1fr]">
+            <div
+                className={cn(
+                    'mx-auto grid max-w-6xl gap-10 px-4 py-12 sm:px-6',
+                    locations.length > 0 ? 'md:grid-cols-[1.2fr_1.2fr_1fr]' : 'md:grid-cols-[1.4fr_1fr]',
+                )}
+            >
                 <div>
                     <BrandLogo withTeacher />
                     <p className="text-brand-text/70 mt-4 max-w-sm text-sm leading-relaxed">{site.business.tagline}.</p>
                 </div>
+
+                {locations.length > 0 && (
+                    <div className="min-w-0">
+                        <h2 className="font-heading text-brand-text text-base font-bold">{locations.length > 1 ? 'Sucursales' : 'Visítanos'}</h2>
+                        <ul className="mt-4 grid gap-3">
+                            {locations.map((location) => (
+                                <li key={location.id}>
+                                    <a
+                                        href={location.directions_url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-brand-text/75 hover:text-brand-text group flex items-start gap-2 text-sm leading-relaxed"
+                                    >
+                                        <MapPin className="text-brand-primary-strong mt-0.5 size-4 shrink-0" />
+                                        <span>
+                                            {location.name && <span className="text-brand-text block font-semibold">{location.name}</span>}
+                                            <span className="underline-offset-4 group-hover:underline">{location.address}</span>
+                                        </span>
+                                    </a>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                )}
 
                 <div>
                     <h2 className="font-heading text-brand-text text-base font-bold">Síguenos y escríbenos</h2>

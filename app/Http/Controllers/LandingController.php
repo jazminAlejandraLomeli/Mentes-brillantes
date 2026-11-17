@@ -5,11 +5,13 @@ namespace App\Http\Controllers;
 use App\Http\Resources\BannerResource;
 use App\Http\Resources\EventResource;
 use App\Http\Resources\GalleryItemResource;
+use App\Http\Resources\LocationResource;
 use App\Http\Resources\ServiceResource;
 use App\Http\Resources\TeacherResource;
 use App\Models\Banner;
 use App\Models\Event;
 use App\Models\GalleryItem;
+use App\Models\Location;
 use App\Models\Service;
 use App\Models\Teacher;
 use App\Support\ServiceCategories;
@@ -34,6 +36,8 @@ class LandingController extends Controller
             // Perfiles de maestros visibles ("Conoce a tu maestra")
             'teachers' => Teacher::query()->onWebsite()->ordered()->get()
                 ->map(fn (Teacher $t) => (new TeacherResource($t))->forPublic()),
+            // Sucursales visibles ("Visítanos" y pie de página)
+            'locations' => LocationResource::collection(Location::query()->active()->ordered()->get()),
             'contactUrl' => WhatsAppLink::contact(),
         ]);
     }

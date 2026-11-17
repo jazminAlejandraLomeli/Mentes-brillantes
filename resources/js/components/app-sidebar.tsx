@@ -4,7 +4,20 @@ import { NavUser } from '@/components/nav-user';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem, type SharedData } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
-import { Calendar, CalendarDays, ExternalLink, GraduationCap, House, Image, Images, MessageSquareText, Palette, Shapes, Users } from 'lucide-react';
+import {
+    Calendar,
+    CalendarDays,
+    ExternalLink,
+    GraduationCap,
+    House,
+    Image,
+    Images,
+    MapPin,
+    MessageSquareText,
+    Palette,
+    Shapes,
+    Users,
+} from 'lucide-react';
 import AppLogo from './app-logo';
 
 const agendaItems: NavItem[] = [
@@ -21,6 +34,7 @@ const contentItems: NavItem[] = [
     { title: 'Servicios y cursos', url: route('admin.services.index'), icon: Shapes },
     { title: 'Eventos y avisos', url: route('admin.events.index'), icon: Calendar },
     { title: 'Galería', url: route('admin.gallery.index'), icon: Images },
+    { title: 'Sucursales', url: route('admin.locations.index'), icon: MapPin },
 ];
 
 const settingsItems: NavItem[] = [
