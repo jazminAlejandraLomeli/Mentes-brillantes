@@ -22,3 +22,6 @@ Homestead.json
 Homestead.yaml
 npm-debug.log
 yarn-error.log
+
+# Datos propios de cada servidor (WhatsApp, etc.); ver app/Support/SiteConfig.php
+/config/site.local.json

@@ -7,8 +7,14 @@ use Illuminate\Support\Arr;
 /**
  * Lee config/site.json: datos del negocio, WhatsApp y redes sociales.
  *
- * El archivo se puede editar directamente en el servidor (por ejemplo desde
- * el Administrador de archivos de Hostinger) y el cambio se ve al instante,
+ * Si en el servidor existe config/site.local.json (no se sube a GitHub),
+ * sus datos reemplazan a los de site.json. Así la demo y el sitio de cada
+ * cliente comparten el mismo código pero cada uno tiene, por ejemplo,
+ * su propio número de WhatsApp. Basta con poner ahí solo lo que cambia:
+ *
+ *     { "whatsapp": { "phone": "3781234567" } }
+ *
+ * Los archivos se pueden editar en el servidor y el cambio se ve al instante,
  * sin recompilar el frontend ni limpiar la caché de configuración.
  */
 class SiteConfig
@@ -22,23 +28,40 @@ class SiteConfig
     public static function all(): array
     {
         if (self::$data === null) {
-            $path = base_path('config/site.json');
-            $decoded = is_file($path) ? json_decode((string) file_get_contents($path), true) : null;
-            $site = is_array($decoded) ? $decoded : [];
-
-            // Los grupos de datos se completan campo por campo con los valores por defecto;
-            // las listas (categorías, puntos destacados…) se toman completas del cliente.
-            $merged = self::DEFAULTS;
-            foreach ($site as $key => $value) {
-                $merged[$key] = is_array($value) && ! array_is_list($value) && is_array($merged[$key] ?? null)
-                    ? array_replace($merged[$key], $value)
-                    : $value;
-            }
-
-            self::$data = $merged;
+            $site = self::merge(self::DEFAULTS, self::read(base_path('config/site.json')));
+            self::$data = self::merge($site, self::read(base_path('config/site.local.json')));
         }
 
         return self::$data;
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private static function read(string $path): array
+    {
+        $decoded = is_file($path) ? json_decode((string) file_get_contents($path), true) : null;
+
+        return is_array($decoded) ? $decoded : [];
+    }
+
+    /**
+     * Los grupos de datos se completan campo por campo;
+     * las listas (categorías, puntos destacados…) se reemplazan completas.
+     *
+     * @param  array<string, mixed>  $base
+     * @param  array<string, mixed>  $override
+     * @return array<string, mixed>
+     */
+    private static function merge(array $base, array $override): array
+    {
+        foreach ($override as $key => $value) {
+            $base[$key] = is_array($value) && ! array_is_list($value) && is_array($base[$key] ?? null)
+                ? array_replace($base[$key], $value)
+                : $value;
+        }
+
+        return $base;
     }
 
     /**
@@ -126,13 +149,6 @@ class SiteConfig
      */
     public static function fake(array $site): void
     {
-        self::$data = null;
-        $merged = self::DEFAULTS;
-        foreach ($site as $key => $value) {
-            $merged[$key] = is_array($value) && ! array_is_list($value) && is_array($merged[$key] ?? null)
-                ? array_replace($merged[$key], $value)
-                : $value;
-        }
-        self::$data = $merged;
+        self::$data = self::merge(self::DEFAULTS, $site);
     }
 }
