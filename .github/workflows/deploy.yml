@@ -22,7 +22,6 @@ jobs:
     runs-on: ubuntu-latest
     env:
       SSH_PORT: 65002
-      APP_DIR: domains/jazmin-lomeli.com/demo-app
     steps:
       - name: Preparar la llave SSH
         env:
@@ -35,17 +34,33 @@ jobs:
           # Quita espacios sobrantes o comillas invertidas (`) que se cuelan al copiar
           printf '%s\n' "$KNOWN" | tr -d '\r`' | sed 's/^ *//; s/ *$//' > ~/.ssh/known_hosts
 
-      - name: Correr deploy.sh en Hostinger
+      # Primero la demo: si algo sale mal ahí, el sitio de Liz no se toca
+      - name: Actualizar la demo (demo.jazmin-lomeli.com)
         env:
           HOST: ${{ secrets.SSH_HOST }}
         run: |
           HOST=$(printf '%s' "$HOST" | tr -d ' \r\n\t`')
           ssh -i ~/.ssh/id_deploy -o IdentitiesOnly=yes -o BatchMode=yes -o StrictHostKeyChecking=yes \
-            -p "$SSH_PORT" "$HOST" "cd ~/$APP_DIR && bash deploy.sh"
+            -p "$SSH_PORT" "$HOST" "cd ~/domains/jazmin-lomeli.com/demo-app && bash deploy.sh"
 
-      - name: Revisar que el sitio responda
+      - name: Revisar la demo
         run: |
           sleep 5
           code=$(curl -s -o /dev/null -w "%{http_code}" https://demo.jazmin-lomeli.com)
+          echo "HTTP $code"
+          test "$code" = "200"
+
+      - name: Actualizar el sitio de Liz (mentes-brillantes-by-liz.com)
+        env:
+          HOST: ${{ secrets.SSH_HOST }}
+        run: |
+          HOST=$(printf '%s' "$HOST" | tr -d ' \r\n\t`')
+          ssh -i ~/.ssh/id_deploy -o IdentitiesOnly=yes -o BatchMode=yes -o StrictHostKeyChecking=yes \
+            -p "$SSH_PORT" "$HOST" "cd ~/domains/mentes-brillantes-by-liz.com/app && bash deploy.sh"
+
+      - name: Revisar el sitio de Liz
+        run: |
+          sleep 5
+          code=$(curl -s -o /dev/null -w "%{http_code}" https://mentes-brillantes-by-liz.com)
           echo "HTTP $code"
           test "$code" = "200"
